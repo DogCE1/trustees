@@ -1,0 +1,49 @@
+<?php
+include "includes/db.php";
+
+$sql = "SELECT * FROM listings 
+        WHERE status = 'verified' 
+        ORDER BY created_at DESC 
+        LIMIT 8";
+
+$result = $conn->query($sql);
+$listings = [];
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $listings[] = $row;
+    }
+}
+?>
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ITECA - Home</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+    <h1>Welcome to ITECA</h1>
+    <h2>Latest Listings</h2>
+    <div class="listings">
+        <?php foreach ($listings as $listing): ?>
+            <div class="listing">
+                <h3><?php echo htmlspecialchars($listing['title']); ?></h3>
+                <p><?php echo htmlspecialchars($listing['description']); ?></p>
+                <a href="listings/view.php?id=<?php echo $listing['id']; ?>">
+                    View listing
+                </a>
+                <p><strong>Price:</strong> R<?php echo htmlspecialchars($listing['price']); ?></p>
+                
+            </div>
+        <?php endforeach; ?>
+        <?php if (empty($listings)): ?>
+            <p>No listings available yet.</p>
+        <?php endif; ?>
+    </div>
+</div>
+</body>
+</html>
