@@ -1,26 +1,26 @@
 <?php
-session_start();
 include "../includes/auth.php";
 include "../includes/db.php";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $title = $_POST['Title'];
-    $description = $_POST['Description'];
-    $price = $_POST['Price'];
-    $category = $_POST['Category'];
-    $condition = $_POST['Condition'];
+    $title = mysqli_real_escape_string($conn, $_POST['Title']);
+    $description = mysqli_real_escape_string($conn, $_POST['Description']);
+    $price = mysqli_real_escape_string($conn, $_POST['Price']);
+    $category = mysqli_real_escape_string($conn, $_POST['Category']);
+    $condition = mysqli_real_escape_string($conn, $_POST['Condition']);
     $user_id = $_SESSION['user_id'];
 
     // Handle image upload
     if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
         $image_name = basename($_FILES['image']['name']);
-        $target_dir = "uploads/";
+        $target_dir = $_SERVER['DOCUMENT_ROOT'] . "/ITECA-Website/Uploads/listings/";
         $target_file = $target_dir . uniqid() . "_" . $image_name;
+        $image_for_db = "Uploads/listings/" . uniqid() . "_" . $image_name;
 
         if (move_uploaded_file($_FILES['image']['tmp_name'], $target_file)) {
             // Insert listing into database
             $sql = "INSERT INTO listings (user_id, title, description, price, category, item_condition, image) 
-                    VALUES ('$user_id', '$title', '$description', '$price', '$category', '$condition', '$target_file')";
+                    VALUES ('$user_id', '$title', '$description', '$price', '$category', '$condition', '$image_for_db')";
             if (mysqli_query($conn, $sql)) {
                 header("Location: ../index.php");
                 exit();
