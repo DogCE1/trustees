@@ -1,4 +1,5 @@
 <?php
+session_start();
 include "includes/db.php";
 
 $sql = "SELECT * FROM listings 
@@ -42,6 +43,11 @@ if ($result->num_rows > 0) {
         <?php endforeach; ?>
         <?php if (empty($listings)): ?>
             <p>No listings available yet.</p>
+            <a href="listings/create.php" class="btn">Create New Listing</a>
+        <?php endif; ?>
+
+        <?php if(isset($_SESSION['role']) && $_SESSION['role'] == 'admin'): ?>
+            <a href="Admin/dashboard.php" class="btn">Admin Dashboard</a>
         <?php endif; ?>
     </div>
 </div>
