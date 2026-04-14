@@ -23,27 +23,24 @@ if($result->num_rows > 0){
     }
 } else {
     echo "No orders found.";
-    exit();
+    $orders = [];
 }
 
 if($_SERVER["REQUEST_METHOD"] == "POST"){
     $order_id = $_POST['order_id'];
-    $status = mysqli_real_escape_string($conn, $_POST['status']);
-    $sql = "UPDATE orders SET status = '$status' WHERE id = '$order_id'";
-    $conn->query($sql);
+    $status = $_POST['status'];
+    $sql = "UPDATE orders SET status = ? WHERE id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("si", $status, $order_id);
+    $stmt->execute();
     header("Location: orders.php");
     exit();
 }
+
+include '../Includes/header.php';
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order Management</title>
-    <link rel="stylesheet" href="../CSS/style.css">
-</head>
+
 <body>
     <div class="container">
         <h1>Order Management</h1>
@@ -61,6 +58,11 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                 </tr>
             </thead>
             <tbody>
+                <?php if(empty($orders)): ?>
+                    <tr>
+                        <td colspan="6">No orders found.</td>
+                    </tr>
+                    <?php endif; ?>
                 <?php foreach($orders as $order): ?>
                 <tr>
                     <td><?php echo htmlspecialchars($order['user_name']); ?></td>
@@ -86,5 +88,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
             </tbody>
         </table>
     </div>
-</body>
-</html>
+
+<?php
+include '../Includes/footer.php';
+?>

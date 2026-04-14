@@ -6,19 +6,16 @@ if (!isset($_GET['id'])) {
     exit();
 }
 $id = $_GET['id'];
-$sql = "Select * from listings where id = $id";
-$result = $conn->query($sql);
+$sql = "SELECT * FROM listings WHERE id = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $id);
+$stmt->execute();
+$result = $stmt->get_result();
+
+include "../Includes/header.php";
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ITECA - View Listing</title>
-    <link rel="stylesheet" href="../style.css">
-</head>
-<body>
+
 <div class="container">
     <?php if ($result->num_rows > 0): ?>
         <?php $listing = $result->fetch_assoc(); ?>
@@ -33,5 +30,8 @@ $result = $conn->query($sql);
     <?php endif; ?>
     <a href="../index.php">Back to Home</a>
 </div>
-</body>
-</html>
+
+
+<?php
+include "../Includes/footer.php";
+?>

@@ -6,12 +6,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $_POST['email'];
     $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
     $phonenr = $_POST['phonenr'];
-    $sql = "INSERT INTO users (name, surname, email, password, phonenr) VALUES ('$name', '$surname', '$email', '$password', '$phonenr')";
-    if (mysqli_query($conn, $sql)) {
+    $sql = "INSERT INTO users (name, surname, email, password, phonenr) VALUES (?, ?, ?, ?, ?)";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("ssss", $name, $surname, $email, $password, $phonenr);
+    $stmt->execute();
+
+    if ($stmt->affected_rows > 0) {
         header("Location: login.php");
         exit();
     } else {
-        echo "Error: " . $sql . "<br>" . mysqli_error($conn);
+        echo "Error: " . $sql . "<br>" . $conn->error;
     }
 }
 

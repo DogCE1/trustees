@@ -4,20 +4,27 @@ include "Includes/db.php";
 if ($_SERVER["REQUEST_METHOD"] == "POST"){
     $email = $_POST['email'];
     $password = $_POST['password'];
-    $sql = "SELECT * FROM users where email = '$email'";
-    $result = mysqli_query($conn, $sql);
-    $row = mysqli_fetch_assoc($result);
-    if (password_verify($password, $row['password'])) {
+    $sql = "SELECT * FROM users WHERE email = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt -> bind_param("s", $email);
+    $stmt -> execute();
+    $result = $stmt->get_result();
+
+    if($row = $result->fetch_assoc()) {
+        if(password_verify($password, $row['password']) &&  ($result->num_rows===1)) {
         
-        $_SESSION['user_id'] = $row['id'];
-        $_SESSION['user_name'] = $row['name'];
-        $_SESSION['role'] = $row['role'];
-        if ($row['role'] == 'admin') {
-            header("Location: Admin/dashboard.php");
+            $_SESSION['user_id'] = $row['id'];
+            $_SESSION['user_name'] = $row['name'];
+            $_SESSION['role'] = $row['role'];
+            if ($row['role'] == 'admin') {
+                header("Location: Admin/dashboard.php");
+            } else {
+                header("Location: index.php");
+            }
+            exit();
         } else {
-            header("Location: index.php");
+            echo "Invalid email or password.";
         }
-        exit();
     } else {
         echo "Invalid email or password.";
     }
