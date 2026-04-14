@@ -32,6 +32,10 @@ for everyday buyers and sellers.
 - Version Control: Git & GitHub
 - Local Development: XAMPP
 
+## Database Setup
+
+To set up the database: in phpMyAdmin, import `database/trustees_db.sql`, then import `database/seed.sql`.
+
 ## Project Status
 
 Currently under development as part of a college project.
