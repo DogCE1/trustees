@@ -1,5 +1,4 @@
 <?php
-session_start();
 include "includes/db.php";
 
 $sql = "SELECT * FROM listings 
@@ -14,18 +13,12 @@ if ($result->num_rows > 0) {
         $listings[] = $row;
     }
 }
+
+include "Includes/header.php";
 ?>
 
+<!-- main section start -->
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ITECA - Home</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
 <div class="container">
     <h1>Welcome to ITECA</h1>
     <h2>Latest Listings</h2>
@@ -51,5 +44,7 @@ if ($result->num_rows > 0) {
         <?php endif; ?>
     </div>
 </div>
-</body>
-</html>
+
+<?php
+include "Includes/footer.php";
+?>
