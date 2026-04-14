@@ -26,17 +26,10 @@ $result = $conn->query($sql);
 $row = $result->fetch_assoc();
 $totalDisputes = $row['Total_Disputes'];
 
+include "../Includes/header.php";
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
-    <link rel="stylesheet" href="../CSS/style.css">
-</head>
-<body>
+
 <div class="container">
     <h1>Admin Dashboard</h1>
     <div class="dashboard">
@@ -53,7 +46,7 @@ $totalDisputes = $row['Total_Disputes'];
         <div class="dashboard-item">
             <h2>Pending Listings</h2>
             <p><?php echo $totalPending; ?></p>
-            <a href="verify_listings.php">View Pending Listings</a>
+            <a href="listings.php">View Pending Listings</a>
         </div>
         <div class="dashboard-item">
             <h2>Total Disputes</h2>
@@ -65,5 +58,7 @@ $totalDisputes = $row['Total_Disputes'];
 
     <a href="../logout.php">Logout</a>
 </div>
-</body>
-</html>
+
+<?php
+include "../Includes/footer.php";
+?>

@@ -19,36 +19,28 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
 //Approve user
 if ($_POST['action'] ==='approve') {
     $user_id = $_POST['user_id'];
-    $sql = "UPDATE users SET is_verified = 1 WHERE id = '$user_id'";
+    $sql = "UPDATE users SET is_verified = 1 WHERE id = '?'";
     $stmt = $conn->prepare($sql);
     $stmt->execute();
 }//Reject user
 else if ($_POST['action'] === 'reject') {
     $user_id = $_POST['user_id'];
-    $sql = "UPDATE users SET is_verified = 0 WHERE id = '$user_id'";
+    $sql = "UPDATE users SET is_verified = 0 WHERE id = '?'";
     $stmt = $conn->prepare($sql);
     $stmt->execute();
 }
 header("Location: verify_users.php");
 exit();
 }
+include "../Includes/header.php";
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verify Users</title>
-    <link rel="stylesheet" href="../CSS/style.css">
-</head>
-<body>
+
     <div class="container">
         <h1>Verify Users</h1>
         <p>Use the buttons below to approve or reject user registrations.</p>
         <a href="users.php">Back to User Management</a>
 
-       
             <table>
                 <thead>
                     <tr>
@@ -75,5 +67,8 @@ exit();
             </table>
         
     </div>
-</body>
-</html>
+
+
+<?php
+include "../Includes/footer.php";
+?>
