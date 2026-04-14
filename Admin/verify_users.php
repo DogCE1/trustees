@@ -12,21 +12,21 @@ if($result->num_rows > 0) {
     }
 } else {
     echo "No users pending verification.";
-    exit();
+    $users = [];
 }
 
 if($_SERVER["REQUEST_METHOD"] == "POST") {
 //Approve user
 if ($_POST['action'] ==='approve') {
-    $user_id = $_POST['user_id'];
-    $sql = "UPDATE users SET is_verified = 1 WHERE id = '?'";
-    $stmt = $conn->prepare($sql);
+    $sql = "UPDATE users SET is_verified = 1 WHERE id = ?";
+    
+    $stmt->bind_param("i", $_POST['user_id']);
     $stmt->execute();
 }//Reject user
 else if ($_POST['action'] === 'reject') {
-    $user_id = $_POST['user_id'];
-    $sql = "UPDATE users SET is_verified = 0 WHERE id = '?'";
+    $sql = "UPDATE users SET is_verified = 0 WHERE id = ?";
     $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $_POST['user_id']);
     $stmt->execute();
 }
 header("Location: verify_users.php");
@@ -50,6 +50,11 @@ include "../Includes/header.php";
                     </tr>
                 </thead>
                 <tbody>
+                    <?php if(empty($users)): ?>
+                    <tr>
+                        <td colspan="3">No users pending verification.</td>
+                    </tr>
+                    <?php endif; ?>
                     <?php foreach ($users as $user): ?>
                     <tr>
                         <td><?php echo $user['name']; ?></td>
