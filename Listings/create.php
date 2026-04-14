@@ -1,6 +1,6 @@
 <?php
-include "../includes/auth.php";
-include "../includes/db.php";
+include "../Includes/db.php";
+
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $title = mysqli_real_escape_string($conn, $_POST['Title']);
@@ -14,8 +14,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
         $image_name = basename($_FILES['image']['name']);
         $target_dir = $_SERVER['DOCUMENT_ROOT'] . "/ITECA-Website/Uploads/listings/";
-        $target_file = $target_dir . uniqid() . "_" . $image_name;
-        $image_for_db = "Uploads/listings/" . uniqid() . "_" . $image_name;
+        $unique_id = uniqid() . "_" . $image_name;
+        $target_file = $target_dir . $unique_id;
+        $image_for_db = "Uploads/listings/" . $unique_id; // Path to store in database
 
         if (move_uploaded_file($_FILES['image']['tmp_name'], $target_file)) {
             // Insert listing into database
@@ -34,18 +35,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         echo "No image uploaded or there was an error.";
     }
 }
-
+include "../Includes/header.php";
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ITECA - Create Listing</title>
-    <link rel="stylesheet" href="../style.css">
-</head>
-<body>
     <div class="container">
         <h1> Create a New Listing</h1>
         <form action="create.php" method="post" enctype="multipart/form-data">
@@ -61,15 +53,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </select>
             <select name="Condition" required>
                 <option value="" disabled selected>Select Condition</option>
-                <option value="New">New</option>
-                <option value="Like New">Like New</option>
-                <option value="Good">Good</option>
-                <option value="Fair">Fair</option>
-                <option value="Poor">Poor</option>
+                <option value="new">New</option>
+                <option value="like_new">Like New</option>
+                <option value="good">Good</option>
+                <option value="fair">Fair</option>
+                <option value="poor">Poor</option>
+                <option value="refurbished">Refurbished</option>
             </select>
             <input type="file" name="image" accept="image/*" required>
             <button type="submit">Create Listing</button>
         </form>
     </div>
-</body>
-</html>
+
+<?php
+include "../Includes/footer.php";
+?>

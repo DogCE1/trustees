@@ -52,9 +52,10 @@ CREATE TABLE `listings` (
   `description` text DEFAULT NULL,
   `price` decimal(10,2) DEFAULT NULL,
   `category` varchar(50) DEFAULT NULL,
-  `item_condition` enum('new','used','refurbished') DEFAULT NULL,
+  `item_condition` enum('new','like_new', 'good', 'fair', 'poor','refurbished') DEFAULT NULL,  -- Updated condition options
   `image` varchar(255) DEFAULT NULL,
-  `status` enum('pending','verified','sold') DEFAULT 'pending',
+  `status` enum('pending','verified','sold','rejected') DEFAULT 'pending', -- New status for listings (rejected)
+  `rejection_reason` text DEFAULT NULL, -- New field for rejection reason
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 

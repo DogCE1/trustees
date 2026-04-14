@@ -1,5 +1,5 @@
 <?php
-include "includes/db.php";
+include "Includes/db.php";
 
 $sql = "SELECT * FROM listings 
         WHERE status = 'verified' 
@@ -27,16 +27,18 @@ include "Includes/header.php";
             <div class="listing">
                 <h3><?php echo htmlspecialchars($listing['title']); ?></h3>
                 <p><?php echo htmlspecialchars($listing['description']); ?></p>
-                <a href="listings/view.php?id=<?php echo $listing['id']; ?>">
+                <a href="Listings/view.php?id=<?php echo $listing['id']; ?>">
                     View listing
                 </a>
                 <p><strong>Price:</strong> R<?php echo htmlspecialchars($listing['price']); ?></p>
                 
             </div>
         <?php endforeach; ?>
+        <a href="Listings/create.php" class="btn">Create New Listing</a>
+    </div>
         <?php if (empty($listings)): ?>
             <p>No listings available yet.</p>
-            <a href="listings/create.php" class="btn">Create New Listing</a>
+            <a href="Listings/create.php" class="btn">Create New Listing</a>
         <?php endif; ?>
 
         <?php if(isset($_SESSION['role']) && $_SESSION['role'] == 'admin'): ?>
