@@ -1,4 +1,5 @@
 <?php
+//Still need to change  listing views and create listing to only show verified listings
 include '../Admin/verify_listings.php';
 include '../Includes/header.php';
 ?>

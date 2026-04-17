@@ -23,7 +23,7 @@ if (isset($_SESSION['user_id'])) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <!-- custom css file link  -->
-    <link rel="stylesheet" href="CSS/style.css">
+    <link rel="stylesheet" href="/ITECA-Website/CSS/style.css">
 </head>
 <body>
     <!-- header section start -->
@@ -43,7 +43,7 @@ if (isset($_SESSION['user_id'])) {
                     <li><a href="/ITECA-Website/Admin/listings.php">Listings</a></li>
                     <li><a href="/ITECA-Website/Admin/orders.php"> Orders</a></li>
                     <li><a href="/ITECA-Website/Admin/users.php"> Users</a></li>
-                    <li><a href="/ITECA-Website/Logout.php">Logout</a></li>
+                    <li><a href="/ITECA-Website/logout.php">Logout</a></li>
                 </ul>
             </nav>
 
@@ -59,12 +59,12 @@ if (isset($_SESSION['user_id'])) {
             </nav>
         <?php endif; ?>
         <div class="icons">
-            <a href="ITECA-Website/Listings/search.php"></a>
+            <a href="/ITECA-Website/Listings/search.php"></a>
             <?php
             if ($user_id != '') {
                 echo '<div id="user-btn" class="fas fa-user"></div>';
             } else {
-                echo '<a href="/ITECA-Website/Login.php" class="btn btn-primary">Login</a>';
+                echo '<a href="/ITECA-Website/login.php" class="btn btn-primary">Login</a>';
             }
             ?>
         </div>
