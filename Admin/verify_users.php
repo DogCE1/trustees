@@ -19,7 +19,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
 //Approve user
 if ($_POST['action'] ==='approve') {
     $sql = "UPDATE users SET is_verified = 1 WHERE id = ?";
-    
+    $stmt= $conn->prepare($sql);
     $stmt->bind_param("i", $_POST['user_id']);
     $stmt->execute();
 }//Reject user

@@ -1,5 +1,5 @@
 <?php
-include "../includes/db.php";
+include "../Includes/db.php";
 
 if (!isset($_GET['id'])) {
     header("Location: ../index.php");
