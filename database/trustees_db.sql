@@ -52,10 +52,10 @@ CREATE TABLE `listings` (
   `description` text DEFAULT NULL,
   `price` decimal(10,2) DEFAULT NULL,
   `category` varchar(50) DEFAULT NULL,
-  `item_condition` enum('new','like_new', 'good', 'fair', 'poor','refurbished') DEFAULT NULL,  -- Updated condition options
+  `item_condition` enum('new','like_new','good','fair','poor','refurbished') DEFAULT NULL,
   `image` varchar(255) DEFAULT NULL,
-  `status` enum('pending','verified','sold','rejected') DEFAULT 'pending', -- New status for listings (rejected)
-  `rejection_reason` text DEFAULT NULL, -- New field for rejection reason
+  `status` enum('pending','verified','sold','rejected') DEFAULT 'pending',
+  `rejection_reason` text DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -101,6 +101,7 @@ CREATE TABLE `users` (
 
 --
 -- Table structure for table `verifications`
+-- Expanded for full seller verification flow (6e)
 --
 
 DROP TABLE IF EXISTS `verifications`;
@@ -108,8 +109,16 @@ CREATE TABLE `verifications` (
   `id` int(11) NOT NULL,
   `user_id` int(11) DEFAULT NULL,
   `id_document` varchar(255) DEFAULT NULL,
+  `selfie_photo` varchar(255) DEFAULT NULL,
+  `verification_video` varchar(255) DEFAULT NULL,
+  `full_name` varchar(200) DEFAULT NULL,
+  `id_number` varchar(50) DEFAULT NULL,
+  `address` text DEFAULT NULL,
   `status` enum('pending','approved','rejected') DEFAULT 'pending',
-  `submitted_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `rejection_reason` text DEFAULT NULL,
+  `submitted_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `reviewed_at` timestamp NULL DEFAULT NULL,
+  `reviewed_by` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -149,19 +158,24 @@ CREATE TABLE `wallet_transactions` (
 -- Indexes for table `disputes`
 --
 ALTER TABLE `disputes`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `order_id` (`order_id`),
+  ADD KEY `user_id` (`user_id`);
 
 --
 -- Indexes for table `listings`
 --
 ALTER TABLE `listings`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `user_id` (`user_id`);
 
 --
 -- Indexes for table `orders`
 --
 ALTER TABLE `orders`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `buyer_id` (`buyer_id`),
+  ADD KEY `listing_id` (`listing_id`);
 
 --
 -- Indexes for table `users`
@@ -172,21 +186,27 @@ ALTER TABLE `users`
 
 --
 -- Indexes for table `verifications`
+-- UNIQUE on user_id: one active verification per user (replace-on-resubmit)
 --
 ALTER TABLE `verifications`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `user_id` (`user_id`),
+  ADD KEY `reviewed_by` (`reviewed_by`);
 
 --
 -- Indexes for table `wallet`
+-- UNIQUE on user_id: prevent duplicate wallets (6b)
 --
 ALTER TABLE `wallet`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `user_id` (`user_id`);
 
 --
 -- Indexes for table `wallet_transactions`
 --
 ALTER TABLE `wallet_transactions`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `user_id` (`user_id`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -233,6 +253,37 @@ ALTER TABLE `wallet`
 --
 ALTER TABLE `wallet_transactions`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- Foreign key constraints (6a)
+--
+-- listings.user_id → SET NULL: preserve listing history if seller account is deleted
+ALTER TABLE `listings`
+  ADD CONSTRAINT `fk_listings_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL;
+
+-- orders.buyer_id → SET NULL: preserve order record for the seller and admin
+ALTER TABLE `orders`
+  ADD CONSTRAINT `fk_orders_buyer` FOREIGN KEY (`buyer_id`) REFERENCES `users` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `fk_orders_listing` FOREIGN KEY (`listing_id`) REFERENCES `listings` (`id`) ON DELETE SET NULL;
+
+-- disputes → SET NULL: preserve dispute audit trail regardless of deletions
+ALTER TABLE `disputes`
+  ADD CONSTRAINT `fk_disputes_order` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `fk_disputes_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL;
+
+-- wallet → CASCADE: wallet belongs to user, delete with user
+ALTER TABLE `wallet`
+  ADD CONSTRAINT `fk_wallet_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+-- wallet_transactions → CASCADE: transaction log belongs to user
+ALTER TABLE `wallet_transactions`
+  ADD CONSTRAINT `fk_wallet_transactions_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+-- verifications → CASCADE: verification belongs to user; reviewed_by → SET NULL if admin deleted
+ALTER TABLE `verifications`
+  ADD CONSTRAINT `fk_verifications_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_verifications_reviewed_by` FOREIGN KEY (`reviewed_by`) REFERENCES `users` (`id`) ON DELETE SET NULL;
+
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
