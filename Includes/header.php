@@ -30,24 +30,27 @@ if (isset($_SESSION['user_id'])) {
     <header class="header">
         <div id="menu-bar" class="fas fa-bars"></div>
         <a href="#" class="logo">Trustees</a>
-        <?php if(!isset($_SESSION['user_id'])): ?>
-            <a href="login.php" >Login</a>
-            <a href="register.php" >Register</a>
-        <?php endif; ?>
-
-        <?php if(isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
+        <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
             <nav class="navbar">
                 <ul>
                     <li><a href="/ITECA-Website/Admin/dashboard.php">Dashboard</a></li>
-                    <li><a href= "/ITECA-Website/Admin/disputes.php">Disputes</a></li>
+                    <li><a href="/ITECA-Website/Admin/disputes.php">Disputes</a></li>
                     <li><a href="/ITECA-Website/Admin/listings.php">Listings</a></li>
-                    <li><a href="/ITECA-Website/Admin/orders.php"> Orders</a></li>
-                    <li><a href="/ITECA-Website/Admin/users.php"> Users</a></li>
+                    <li><a href="/ITECA-Website/Admin/orders.php">Orders</a></li>
+                    <li><a href="/ITECA-Website/Admin/users.php">Users</a></li>
                     <li><a href="/ITECA-Website/logout.php">Logout</a></li>
                 </ul>
             </nav>
+            <div class="icons">
+                <a href="/ITECA-Website/Listings/search.php"></a>
+                <div id="user-btn" class="fas fa-user"></div>
+            </div>
+            <div class="profile">
+                <p><?= htmlspecialchars($_SESSION['user_name']) ?></p>
+                <a href="/ITECA-Website/logout.php" class="btn btn-danger">Logout</a>
+            </div>
 
-        <?php elseif(isset($_SESSION['user_id'])): ?>
+        <?php elseif (isset($_SESSION['user_id'])): ?>
             <nav class="navbar">
                 <ul>
                     <li><a href="/ITECA-Website/Listings/browse.php">Browse</a></li>
@@ -57,26 +60,19 @@ if (isset($_SESSION['user_id'])) {
                     <li><a href="/ITECA-Website/logout.php">Logout</a></li>
                 </ul>
             </nav>
-        <?php endif; ?>
-        <div class="icons">
-            <a href="/ITECA-Website/Listings/search.php"></a>
-            <?php
-            if ($user_id != '') {
-                echo '<div id="user-btn" class="fas fa-user"></div>';
-            } else {
-                echo '<a href="/ITECA-Website/login.php" class="btn btn-primary">Login</a>';
-            }
-            ?>
-        </div>
+            <div class="icons">
+                <a href="/ITECA-Website/Listings/search.php"></a>
+                <div id="user-btn" class="fas fa-user"></div>
+            </div>
+            <div class="profile">
+                <p><?= htmlspecialchars($_SESSION['user_name']) ?></p>
+                <a href="/ITECA-Website/logout.php" class="btn btn-danger">Logout</a>
+            </div>
 
-        <div class="profile">
-            <?php
-            if ($user_id != '') {
-                echo '<p>' . $_SESSION['user_name'] . '</p>';
-                echo '<a href="/ITECA-Website/logout.php" class="btn btn-danger">Logout</a>';
-            }
-            ?>
-        </div>
+        <?php else: ?>
+            <a href="/ITECA-Website/login.php">Login</a>
+            <a href="/ITECA-Website/register.php">Register</a>
+        <?php endif; ?>
 
     </header>
     <!-- header section end -->
