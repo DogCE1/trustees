@@ -8,5 +8,5 @@ mysqli_set_charset($conn, "utf8");
 if (!$conn) {
     die("Connection failed: " . mysqli_connect_error());
 }
-include "../Includes/session.php";
+include __DIR__ . "/session.php";
 ?>
