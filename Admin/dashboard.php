@@ -46,7 +46,7 @@ include "../Includes/header.php";
         <div class="dashboard-item">
             <h2>Pending Listings</h2>
             <p><?php echo $totalPending; ?></p>
-            <a href="listings.php">View Pending Listings</a>
+            <a href="verify_listings.php">View Pending Listings</a>
         </div>
         <div class="dashboard-item">
             <h2>Total Disputes</h2>
