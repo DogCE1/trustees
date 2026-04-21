@@ -25,6 +25,12 @@ include "../Includes/header.php";
         <p><strong>Price:</strong> R<?php echo htmlspecialchars($listing['price']); ?></p>
         <p><strong>Category:</strong> <?php echo htmlspecialchars($listing['category']); ?></p>
         <p><strong>Condition:</strong> <?php echo htmlspecialchars($listing['item_condition']); ?></p>
+        <p><strong>Posted on:</strong> <?php echo date("F j, Y, g:i a", strtotime($listing['created_at'])); ?></p>
+        <p></p>
+        <div class="d-flex gap-2">
+            <p> <button class="btn btn-primary" onclick="location.href='../Orders/checkout.php?id=<?php echo $listing['id']; ?>'">Buy Now</button></p>
+            <p> <button class="btn btn-primary" onclick="location.href='../sellerinfo.php?id=<?php echo $listing['id']; ?>'">Contact Seller</button></p>
+        </div>
     <?php else: ?>
         <p>Listing not found.</p>
     <?php endif; ?>
