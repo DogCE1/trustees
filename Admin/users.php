@@ -10,17 +10,11 @@ if ($result->num_rows > 0) {
         $users[] = $row;
     }
 }
+
+include "../Includes/header.php";
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - Users</title>
-    <link rel="stylesheet" href="../CSS/style.css">
-</head>
-<body>
+
     <div class="container">
         <h1> User Management </h1>
         <table>
@@ -45,5 +39,5 @@ if ($result->num_rows > 0) {
         </table>
         <a href="dashboard.php">Back to Dashboard</a>
     </div>
-</body>
-</html>
+
+<?php include "../Includes/footer.php"; ?>

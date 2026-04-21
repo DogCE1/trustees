@@ -55,7 +55,10 @@ if (isset($_SESSION['user_id'])) {
                 <ul>
                     <li><a href="/ITECA-Website/Listings/browse.php">Browse</a></li>
                     <li><a href="/ITECA-Website/Listings/create.php">Sell</a></li>
+                    <li><a href="/ITECA-Website/Orders/my_orders.php">My Orders</a></li>
+                    <li><a href="/ITECA-Website/Orders/my_sales.php">My Sales</a></li>
                     <li><a href="/ITECA-Website/Profile/wallet.php">Wallet</a></li>
+                    <li><a href="/ITECA-Website/Verification/verify.php">Verify</a></li>
                     <li><a href="/ITECA-Website/Profile/profile.php">Profile</a></li>
                     <li><a href="/ITECA-Website/logout.php">Logout</a></li>
                 </ul>

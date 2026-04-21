@@ -1,0 +1,6 @@
+# Block direct browser access to verification documents (PII / POPIA).
+# Files here may only be served via a future PHP proxy that checks admin role.
+Require all denied
+
+# Disable PHP execution in case anything ever lands here that looks like .php
+php_flag engine off
