@@ -3,6 +3,9 @@ include '../Includes/auth_admin.php';
 include '../Includes/db.php';
 
 if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action'], $_POST['listing_id'])){
+     if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+        die("CSRF token validation failed."); // can be replaced with a more user-friendly error handling in production
+    }
     $listing_id = $_POST['listing_id'];
     $action = $_POST['action'];
     $new_status = null;
@@ -62,10 +65,12 @@ include '../Includes/header.php';
                         <td>
                             <form method="POST" style="display:inline;">
                                 <input type="hidden" name="listing_id" value="<?php echo $listing['id']; ?>">
+                                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
                                 <button type="submit" name="action" value="approve">Approve</button>
                             </form>
                             <form method="POST" style="display:inline;">
                                 <input type="hidden" name="listing_id" value="<?php echo $listing['id']; ?>">
+                                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
                                 <button type="submit" name="action" value="reject">Reject</button>
                             </form>
                         </td>

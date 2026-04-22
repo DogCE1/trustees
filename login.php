@@ -29,14 +29,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST"){
         echo "Invalid email or password.";
     }
 }
+include "Includes/header.php";
 ?>
 
-<html>
-<head>
-    <title>Login</title>
-    <link rel="stylesheet" href="CSS/styles.css">
-</head>
-<body>
+
 <div class="container">
     <h2>Login</h2>
     <form action="login.php" method="post">
@@ -46,5 +42,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST"){
     </form>
     <p>Don't have an account? <a href="register.php">Register here</a></p>
 </div>
-</body>
-</html>
+
+<?php
+include "Includes/footer.php";
+?>
