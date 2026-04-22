@@ -20,7 +20,7 @@ include "Includes/header.php";
 <!-- main section start -->
 
 <div class="container">
-    <h1>Welcome to ITECA</h1>
+    <h1>Welcome to Trustees</h1>
     <h2>Latest Listings</h2>
     <div class="listings">
         <?php foreach ($listings as $listing): ?>

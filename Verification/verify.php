@@ -77,6 +77,9 @@ function save_uploaded_file($field, $allowed_mimes, $target_subdir) {
 }
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+        die("CSRF token validation failed."); // can be replaced with a more user-friendly error handling in production
+    }
     $full_name = trim($_POST['full_name'] ?? '');
     $id_number = trim($_POST['id_number'] ?? '');
     $address   = trim($_POST['address'] ?? '');
@@ -188,6 +191,7 @@ include "../Includes/header.php";
         </p>
 
         <form method="post" enctype="multipart/form-data">
+            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
             <h3>Personal Information</h3>
             <label for="full_name">Full name (as on ID):</label><br>
             <input type="text" name="full_name" id="full_name" required maxlength="200"

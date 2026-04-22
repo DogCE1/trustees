@@ -5,6 +5,9 @@ include "../Includes/db.php";
 $admin_id = $_SESSION['user_id'];
 
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['action'], $_POST['verification_id'])) {
+    if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+        die("CSRF token validation failed."); // can be replaced with a more user-friendly error handling in production
+    }
     $verification_id = (int)$_POST['verification_id'];
     $action = $_POST['action'];
     $reason = trim($_POST['rejection_reason'] ?? '');
@@ -157,11 +160,13 @@ include "../Includes/header.php";
             <?php if ($detail['status'] === 'pending' || $detail['status'] === 'rejected'): ?>
                 <h3>Decision</h3>
                 <form method="post" style="display:inline-block;margin-right:10px;">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
                     <input type="hidden" name="verification_id" value="<?php echo (int)$detail['id']; ?>">
                     <button type="submit" name="action" value="approve" class="btn btn-success">Approve & Verify User</button>
                 </form>
 
                 <form method="post" style="display:inline-block;">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
                     <input type="hidden" name="verification_id" value="<?php echo (int)$detail['id']; ?>">
                     <label for="rejection_reason">Rejection reason:</label><br>
                     <textarea name="rejection_reason" id="rejection_reason" rows="2" cols="40" required></textarea><br>

@@ -17,6 +17,9 @@ if (!$user || (int)$user['is_verified'] !== 1) {
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+     if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+        die("CSRF token validation failed."); // can be replaced with a more user-friendly error handling in production
+    }
     $title       = $_POST['Title'];
     $description = $_POST['Description'];
     $price       = $_POST['Price'];
@@ -102,6 +105,7 @@ include "../Includes/header.php";
     <div class="container">
         <h1> Create a New Listing</h1>
         <form action="create.php" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
             <input type="text" name="Title" placeholder="Title" required>
             <textarea name="Description" placeholder="Description" required></textarea>
             <input type="number" name="Price" placeholder="Price" required>
@@ -110,6 +114,9 @@ include "../Includes/header.php";
                 <option value="Electronics">Electronics</option>
                 <option value="Furniture">Furniture</option>
                 <option value="Clothing">Clothing</option>
+                <option value="Books">Books</option>
+                <option value="Sports">Sports</option>
+                <option value="Other">Other</option>
                 <!-- Add more categories as needed -->
             </select>
             <select name="Condition" required>
