@@ -75,6 +75,7 @@ CREATE TABLE `orders` (
   `status` enum('received','inspecting','ready','delivered','cancelled') DEFAULT 'received',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `quantity` int(11) DEFAULT 1,
+  `unit_price_at_purchase` decimal(10,2) DEFAULT NULL,
   `total_price` decimal(10,2) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -138,6 +139,22 @@ CREATE TABLE `wallet` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `login_attempts`
+-- Used for brute-force rate limiting on login (2e)
+--
+
+DROP TABLE IF EXISTS `login_attempts`;
+CREATE TABLE `login_attempts` (
+  `id` int(11) NOT NULL,
+  `email` varchar(100) DEFAULT NULL,
+  `ip` varchar(45) DEFAULT NULL,
+  `success` tinyint(1) DEFAULT 0,
+  `attempted_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `wallet_transactions`
 --
 
@@ -145,8 +162,10 @@ DROP TABLE IF EXISTS `wallet_transactions`;
 CREATE TABLE `wallet_transactions` (
   `id` int(11) NOT NULL,
   `user_id` int(11) DEFAULT NULL,
+  `order_id` int(11) DEFAULT NULL,
   `amount` decimal(10,2) DEFAULT NULL,
   `type` enum('deposit','hold','release') DEFAULT NULL,
+  `balance_after` decimal(10,2) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -206,7 +225,17 @@ ALTER TABLE `wallet`
 --
 ALTER TABLE `wallet_transactions`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `user_id` (`user_id`);
+  ADD KEY `user_id` (`user_id`),
+  ADD KEY `order_id` (`order_id`);
+
+--
+-- Indexes for table `login_attempts`
+-- Composite indexes tuned for the rate-limit COUNT query
+--
+ALTER TABLE `login_attempts`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `email_time` (`email`, `attempted_at`),
+  ADD KEY `ip_time` (`ip`, `attempted_at`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -255,6 +284,12 @@ ALTER TABLE `wallet_transactions`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `login_attempts`
+--
+ALTER TABLE `login_attempts`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- Foreign key constraints (6a)
 --
 -- listings.user_id → SET NULL: preserve listing history if seller account is deleted
@@ -275,9 +310,10 @@ ALTER TABLE `disputes`
 ALTER TABLE `wallet`
   ADD CONSTRAINT `fk_wallet_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
--- wallet_transactions → CASCADE: transaction log belongs to user
+-- wallet_transactions → CASCADE on user (log belongs to user); SET NULL on order (preserve log if order deleted)
 ALTER TABLE `wallet_transactions`
-  ADD CONSTRAINT `fk_wallet_transactions_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `fk_wallet_transactions_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_wallet_transactions_order` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE SET NULL;
 
 -- verifications → CASCADE: verification belongs to user; reviewed_by → SET NULL if admin deleted
 ALTER TABLE `verifications`
