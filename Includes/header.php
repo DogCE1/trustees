@@ -1,7 +1,4 @@
 <?php
-if (!isset($_SESSION)) {
-    session_start();
-}
 if (isset($_SESSION['user_id'])) {
     $user_id = $_SESSION['user_id'];
 } else {
@@ -38,7 +35,6 @@ if (isset($_SESSION['user_id'])) {
                     <li><a href="/ITECA-Website/Admin/listings.php">Listings</a></li>
                     <li><a href="/ITECA-Website/Admin/orders.php">Orders</a></li>
                     <li><a href="/ITECA-Website/Admin/users.php">Users</a></li>
-                    <li><a href="/ITECA-Website/logout.php">Logout</a></li>
                 </ul>
             </nav>
             <div class="icons">
@@ -60,7 +56,7 @@ if (isset($_SESSION['user_id'])) {
                     <li><a href="/ITECA-Website/Profile/wallet.php">Wallet</a></li>
                     <li><a href="/ITECA-Website/Verification/verify.php">Verify</a></li>
                     <li><a href="/ITECA-Website/Profile/profile.php">Profile</a></li>
-                    <li><a href="/ITECA-Website/logout.php">Logout</a></li>
+                   
                 </ul>
             </nav>
             <div class="icons">
