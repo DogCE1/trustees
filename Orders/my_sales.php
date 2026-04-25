@@ -5,6 +5,11 @@ include "../Includes/db.php";
 $user_id = $_SESSION['user_id'];
 
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['action'], $_POST['order_id'])) {
+     if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+        set_flash('error', "CSRF token validation failed.");
+        header("Location: my_sales.php");
+        exit();
+    }
     $order_id  = (int)$_POST['order_id'];
     $action    = $_POST['action'];
 
@@ -98,11 +103,13 @@ include "../Includes/header.php";
                         <td>
                             <?php if ($sale['status'] === 'received'): ?>
                                 <form method="post">
+                                    <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
                                     <input type="hidden" name="order_id" value="<?php echo (int)$sale['id']; ?>">
                                     <button type="submit" name="action" value="mark_inspecting" class="btn btn-secondary">Mark Inspecting</button>
                                 </form>
                             <?php elseif ($sale['status'] === 'inspecting'): ?>
                                 <form method="post">
+                                    <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
                                     <input type="hidden" name="order_id" value="<?php echo (int)$sale['id']; ?>">
                                     <button type="submit" name="action" value="mark_ready" class="btn btn-primary">Mark Ready for Buyer</button>
                                 </form>

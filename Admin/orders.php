@@ -27,6 +27,11 @@ if($result->num_rows > 0){
 }
 
 if($_SERVER["REQUEST_METHOD"] == "POST"){
+     if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+        set_flash('error', "CSRF token validation failed.");
+        header("Location: orders.php");
+        exit();
+    }
     $order_id = $_POST['order_id'];
     $status = $_POST['status'];
     $sql = "UPDATE orders SET status = ? WHERE id = ?";
@@ -72,6 +77,7 @@ include '../Includes/header.php';
                     <td><?php echo ucfirst($order['status']); ?></td>
                     <td>
                         <form method="POST" action="orders.php">
+                            <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
                             <input type="hidden" name="order_id" value="<?php echo $order['id']; ?>">
                             <select name="status">
                                 <option value="received" <?php if($order['status'] == 'received') echo 'selected'; ?>>Received</option>

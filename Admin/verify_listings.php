@@ -4,7 +4,9 @@ include '../Includes/db.php';
 
 if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action'], $_POST['listing_id'])){
      if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
-        die("CSRF token validation failed."); // can be replaced with a more user-friendly error handling in production
+        set_flash('error', "CSRF token validation failed.");
+        header("Location: verify_listings.php");
+        exit();
     }
     $listing_id = $_POST['listing_id'];
     $action = $_POST['action'];
