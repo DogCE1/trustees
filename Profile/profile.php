@@ -19,6 +19,11 @@ if (!$user) {
 }
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
+     if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+        set_flash('error', "CSRF token validation failed.");
+        header("Location: profile.php");
+        exit();
+    }
     $action = $_POST['action'] ?? '';
 
     if ($action === 'update_profile') {
@@ -141,6 +146,7 @@ include "../Includes/header.php";
 
     <h2>Edit Details</h2>
     <form method="post">
+        <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
         <input type="hidden" name="action" value="update_profile">
         <label for="name">First name:</label><br>
         <input type="text" name="name" id="name" required maxlength="100"
@@ -159,6 +165,7 @@ include "../Includes/header.php";
 
     <h2>Change Password</h2>
     <form method="post">
+        <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
         <input type="hidden" name="action" value="change_password">
         <label for="current_password">Current password:</label><br>
         <input type="password" name="current_password" id="current_password" required><br>

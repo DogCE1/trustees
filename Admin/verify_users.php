@@ -6,7 +6,9 @@ $admin_id = $_SESSION['user_id'];
 
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['action'], $_POST['verification_id'])) {
     if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
-        die("CSRF token validation failed."); // can be replaced with a more user-friendly error handling in production
+        set_flash('error', "CSRF token validation failed.");
+        header("Location: verify_users.php");
+        exit();
     }
     $verification_id = (int)$_POST['verification_id'];
     $action = $_POST['action'];

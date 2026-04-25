@@ -54,6 +54,11 @@ $error = $unavailable ?? null;
 $success = null;
 
 if ($_SERVER["REQUEST_METHOD"] === "POST" && !$error) {
+     if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+        set_flash('error', "CSRF token validation failed.");
+        header("Location: checkout.php?id=" . urlencode($listing_id));
+        exit();
+    }
     $delivery_method  = $_POST['delivery_method'] ?? '';
     $delivery_address = trim($_POST['delivery_address'] ?? '');
     $allowed_methods  = ['collect', 'delivery', 'meetup'];
@@ -151,6 +156,7 @@ include "../Includes/header.php";
             <a href="../Profile/wallet.php" class="btn btn-primary">Deposit Funds</a>
         <?php else: ?>
             <form method="post">
+                <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
                 <h3>Delivery Method</h3>
                 <label><input type="radio" name="delivery_method" value="collect" required> Collect from seller</label><br>
                 <label><input type="radio" name="delivery_method" value="meetup"> Meet up</label><br>

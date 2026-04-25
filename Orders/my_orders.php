@@ -5,6 +5,11 @@ include "../Includes/db.php";
 $user_id = $_SESSION['user_id'];
 
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['action'], $_POST['order_id'])) {
+     if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+        set_flash('error', "CSRF token validation failed.");
+        header("Location: my_orders.php");
+        exit();
+    }
     $order_id = (int)$_POST['order_id'];
     $action   = $_POST['action'];
 
@@ -111,6 +116,7 @@ include "../Includes/header.php";
                             <?php if ($order['status'] !== 'delivered' && $order['status'] !== 'cancelled'): ?>
                                 <form method="post" onsubmit="return confirm('Confirm you have received this item? Funds will be released to the seller.');">
                                     <input type="hidden" name="order_id" value="<?php echo (int)$order['id']; ?>">
+                                    <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
                                     <button type="submit" name="action" value="confirm_delivery" class="btn btn-success">Confirm Delivery</button>
                                 </form>
                             <?php else: ?>

@@ -1,5 +1,6 @@
 .env
-project-audit-v4.md
-stil-to-do.md
-git
+/git
+*.md
 Trustees Design System
+.htaccess
+*.png

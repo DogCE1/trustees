@@ -2,6 +2,11 @@
 include "Includes/db.php";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+     if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+        set_flash('error', "CSRF token validation failed.");
+        header("Location: login.php");
+        exit();
+    }
     $email = $_POST['email'];
     $password = $_POST['password'];
     $ip = $_SERVER['REMOTE_ADDR'];
@@ -60,10 +65,8 @@ include "Includes/header.php";
 
 <div class="container">
     <h2>Login</h2>
-    <?php if ($error = get_flash('error')): ?>
-        <div class="flash flash-error"><?php echo htmlspecialchars($error); ?></div>
-    <?php endif; ?>
     <form action="login.php" method="post">
+        <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
         <input type="email" name="email" placeholder="Email" required>
         <input type="password" name="password" placeholder="Password" required>
         <button type="submit">Login</button>

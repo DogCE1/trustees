@@ -3,6 +3,11 @@ include "../Includes/auth_admin.php";
 include "../Includes/db.php";
 
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['action'], $_POST['dispute_id'])) {
+     if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+        set_flash('error', "CSRF token validation failed.");
+        header("Location: disputes.php");
+        exit();
+    }
     $dispute_id = (int)$_POST['dispute_id'];
     $action     = $_POST['action'];
     $allowed    = ['open', 'resolved', 'closed'];
@@ -114,18 +119,21 @@ include "../Includes/header.php";
                         <td>
                             <?php if ($d['status'] !== 'resolved'): ?>
                                 <form method="post" style="display:inline;">
+                                    <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
                                     <input type="hidden" name="dispute_id" value="<?php echo (int)$d['id']; ?>">
                                     <button type="submit" name="action" value="resolved" class="btn btn-success">Resolve</button>
                                 </form>
                             <?php endif; ?>
                             <?php if ($d['status'] !== 'closed'): ?>
                                 <form method="post" style="display:inline;">
+                                    <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
                                     <input type="hidden" name="dispute_id" value="<?php echo (int)$d['id']; ?>">
                                     <button type="submit" name="action" value="closed" class="btn btn-secondary">Close</button>
                                 </form>
                             <?php endif; ?>
                             <?php if ($d['status'] !== 'open'): ?>
                                 <form method="post" style="display:inline;">
+                                    <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
                                     <input type="hidden" name="dispute_id" value="<?php echo (int)$d['id']; ?>">
                                     <button type="submit" name="action" value="open" class="btn btn-warning">Reopen</button>
                                 </form>

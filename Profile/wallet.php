@@ -24,6 +24,11 @@ $error = null;
 $success = null;
 
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['amount'])) {
+     if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+        set_flash('error', "CSRF token validation failed."); 
+        header("Location: wallet.php");
+        exit();
+    }
     $amount = filter_var($_POST['amount'], FILTER_VALIDATE_FLOAT);
 
     if ($amount === false || $amount <= 0) {
@@ -86,6 +91,7 @@ include "../Includes/header.php";
 
     <h3>Deposit Funds</h3>
     <form method="post">
+        <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
         <label for="amount">Amount (ZAR):</label>
         <input type="number" name="amount" id="amount" min="1" step="0.01" required>
         <button type="submit" class="btn btn-primary">Deposit</button>
