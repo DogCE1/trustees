@@ -39,9 +39,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $success = ($row && password_verify($password, $row['password'])) ? 1 : 0;
 
     $log = $conn->prepare("INSERT INTO login_attempts (email, ip, success) VALUES (?, ?, ?)");
-    $log->bind_param("ssi", $email, $ip, $success);
-    $log->execute();
-    $log->close();
+    if ($log) {
+        $log->bind_param("ssi", $email, $ip, $success);
+        try {
+            // Login should still work even if logging table is temporarily inconsistent.
+            $log->execute();
+        } catch (mysqli_sql_exception $e) {
+            error_log("login_attempts insert failed: " . $e->getMessage());
+        }
+        $log->close();
+    }
 
     if ($success) {
         $_SESSION['user_id'] = $row['id'];
