@@ -80,10 +80,22 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         }
 
     } elseif ($action === 'delete' && $order_id > 0) {
-        $stmt = $conn->prepare("DELETE FROM orders WHERE id = ?");
+        $stmt = $conn->prepare("SELECT status FROM orders WHERE id = ?");
         $stmt->bind_param("i", $order_id);
         $stmt->execute();
+        $row = $stmt->get_result()->fetch_assoc();
         $stmt->close();
+
+        if (!$row) {
+            set_flash('error', "Order not found.");
+        } elseif (!order_is_terminal($row['status'])) {
+            set_flash('error', "Cannot delete an order that still holds escrow. Resolve, refund, or cancel it first.");
+        } else {
+            $stmt = $conn->prepare("DELETE FROM orders WHERE id = ?");
+            $stmt->bind_param("i", $order_id);
+            $stmt->execute();
+            $stmt->close();
+        }
     }
 
     header("Location: orders.php");
@@ -201,7 +213,9 @@ include '../Includes/header.php';
                                     <button type="submit" name="action" value="approve_proof" class="btn btn-success" onclick="return confirm('Approve delivery proof and release escrow funds to the seller?');">Approve proof</button>
                                     <button type="submit" name="action" value="reject_proof" class="btn btn-danger" onclick="return confirm('Reject this delivery proof? The seller will be asked to re-upload.');">Reject proof</button>
                                 <?php endif; ?>
-                                <button type="submit" name="action" value="delete" class="btn btn-danger" onclick="return confirm('Delete this order? This cannot be undone.');">Delete</button>
+                                <?php if (order_is_terminal($order['status'])): ?>
+                                    <button type="submit" name="action" value="delete" class="btn btn-danger" onclick="return confirm('Delete this order? This cannot be undone.');">Delete</button>
+                                <?php endif; ?>
                             </td>
                         </form>
                     </tr>

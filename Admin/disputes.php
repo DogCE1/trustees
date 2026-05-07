@@ -13,14 +13,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     $action      = $_POST['action'] ?? '';
     $dispute_id  = (int)($_POST['dispute_id'] ?? 0);
-    $allowed     = ['open', 'resolved', 'closed'];
+    $manual_statuses = ['open', 'closed'];
 
     if ($action === 'update' && $dispute_id > 0) {
         $reason = trim($_POST['reason'] ?? '');
         $status = $_POST['status'] ?? 'open';
-        if (!in_array($status, $allowed, true)) $status = 'open';
+        if (!in_array($status, $manual_statuses, true)) $status = 'open';
 
-        $stmt = $conn->prepare("UPDATE disputes SET reason = ?, status = ? WHERE id = ?");
+        $stmt = $conn->prepare("UPDATE disputes SET reason = ?, status = ? WHERE id = ? AND status <> 'resolved'");
         $stmt->bind_param("ssi", $reason, $status, $dispute_id);
         $stmt->execute();
         $stmt->close();
@@ -76,11 +76,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             }
         }
 
-    } elseif (in_array($action, $allowed, true) && $dispute_id > 0) {
-        $stmt = $conn->prepare("UPDATE disputes SET status = ? WHERE id = ?");
-        $stmt->bind_param("si", $action, $dispute_id);
-        $stmt->execute();
-        $stmt->close();
     } elseif ($action === 'delete' && $dispute_id > 0) {
         $stmt = $conn->prepare("DELETE FROM disputes WHERE id = ?");
         $stmt->bind_param("i", $dispute_id);
@@ -140,7 +135,7 @@ $stmt->execute();
 $disputes = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 $stmt->close();
 
-$statuses = ['open', 'resolved', 'closed'];
+$manual_statuses = ['open', 'closed'];
 
 include "../Includes/header.php";
 ?>
@@ -227,11 +222,16 @@ include "../Includes/header.php";
                             </td>
                             <td><?php echo date("Y-m-d H:i", strtotime($d['created_at'])); ?></td>
                             <td>
-                                <select name="status">
-                                    <?php foreach ($statuses as $s): ?>
-                                        <option value="<?php echo $s; ?>" <?php if ($d['status'] === $s) echo 'selected'; ?>><?php echo ucfirst($s); ?></option>
-                                    <?php endforeach; ?>
-                                </select>
+                                <?php if ($d['status'] === 'resolved'): ?>
+                                    <em>Resolved</em>
+                                    <input type="hidden" name="status" value="resolved">
+                                <?php else: ?>
+                                    <select name="status">
+                                        <?php foreach ($manual_statuses as $s): ?>
+                                            <option value="<?php echo $s; ?>" <?php if ($d['status'] === $s) echo 'selected'; ?>><?php echo ucfirst($s); ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                <?php endif; ?>
                             </td>
                             <td>
                                 <button type="submit" name="action" value="update" class="btn btn-primary">Save</button>
