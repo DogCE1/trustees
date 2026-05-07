@@ -30,10 +30,43 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $stmt->execute();
         $stmt->close();
     } elseif ($action === 'delete' && $user_id > 0 && $user_id !== (int)$_SESSION['user_id']) {
-        $stmt = $conn->prepare("DELETE FROM users WHERE id = ?");
+        $stmt = $conn->prepare("SELECT balance FROM wallet WHERE user_id = ?");
         $stmt->bind_param("i", $user_id);
         $stmt->execute();
+        $wallet = $stmt->get_result()->fetch_assoc();
         $stmt->close();
+        $balance = $wallet ? (float)$wallet['balance'] : 0.0;
+
+        $terminal = ['delivered', 'cancelled', 'refunded'];
+        $placeholders = implode(',', array_fill(0, count($terminal), '?'));
+        $types = 'i' . str_repeat('s', count($terminal)) . 'i' . str_repeat('s', count($terminal));
+        $sql = "
+            SELECT COUNT(*) AS active_orders FROM (
+                SELECT o.id FROM orders o
+                WHERE o.buyer_id = ? AND o.status NOT IN ($placeholders)
+                UNION
+                SELECT o.id FROM orders o
+                JOIN listings l ON o.listing_id = l.id
+                WHERE l.user_id = ? AND o.status NOT IN ($placeholders)
+            ) AS active
+        ";
+        $stmt = $conn->prepare($sql);
+        $params = array_merge([$user_id], $terminal, [$user_id], $terminal);
+        $stmt->bind_param($types, ...$params);
+        $stmt->execute();
+        $active = (int)$stmt->get_result()->fetch_assoc()['active_orders'];
+        $stmt->close();
+
+        if (abs($balance) > 0.005) {
+            set_flash('error', "Cannot delete user: wallet still holds R" . number_format($balance, 2) . ". Refund or withdraw the balance first.");
+        } elseif ($active > 0) {
+            set_flash('error', "Cannot delete user: $active active order(s) still in progress. Resolve, refund, or cancel them first.");
+        } else {
+            $stmt = $conn->prepare("DELETE FROM users WHERE id = ?");
+            $stmt->bind_param("i", $user_id);
+            $stmt->execute();
+            $stmt->close();
+        }
     }
 
     header("Location: users.php");

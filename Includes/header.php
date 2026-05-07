@@ -120,7 +120,15 @@ function nav_active($script_names, $current) {
             </div>
 
         <?php else: ?>
-            <div style="flex:1"></div>
+            <nav class="navbar">
+                <ul>
+                    <li><a<?= nav_active('browse.php', $current) ?> href="/ITECA-Website/Listings/browse.php">Browse</a></li>
+                </ul>
+            </nav>
+            <form class="header-search" action="/ITECA-Website/Listings/browse.php" method="get" role="search">
+                <i class="fas fa-search header-search-icon"></i>
+                <input type="search" name="q" placeholder="Search listings…" value="<?= htmlspecialchars($_GET['q'] ?? '') ?>">
+            </form>
             <div class="profile">
                 <a href="/ITECA-Website/login.php" class="btn btn-secondary">Login</a>
                 <a href="/ITECA-Website/register.php" class="btn btn-primary">Register</a>

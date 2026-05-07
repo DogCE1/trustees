@@ -1,5 +1,4 @@
 <?php
-include '../Includes/auth.php';
 require_once __DIR__ . '/../Includes/db.php';
 
 $q          = trim($_GET['q'] ?? '');
@@ -103,7 +102,49 @@ function format_rand($n) {
 ?>
 
 <div class="page">
-    <h1>Browse listings</h1>
+     <section class="tr-hero">
+        <div>
+            <span class="pill pill-verified">✓ Verified marketplace</span>
+            <h1>The middle man<br>you can trust.</h1>
+            <p>Buy and sell safely. Every item is dropped off, inspected and verified at a Trustees location before money changes hands.</p>
+            <div class="tr-hero-actions">
+                <?php if (isset($_SESSION['user_id'])): ?>
+                    <a href="/ITECA-Website/Listings/create.php" class="btn btn-accent btn-lg"><i class="fas fa-circle-plus"></i> List an item</a>
+                    <a href="#browse-listings" class="btn btn-ghost-light btn-lg">Browse listings →</a>
+                <?php else: ?>
+                    <a href="/ITECA-Website/register.php" class="btn btn-accent btn-lg"><i class="fas fa-user-plus"></i> Sign up to sell</a>
+                    <a href="#browse-listings" class="btn btn-ghost-light btn-lg">Browse listings →</a>
+                <?php endif; ?>
+            </div>
+        </div>
+        <aside class="tr-hero-howitworks">
+            <div class="eyebrow">How it works</div>
+            <ol>
+                <li>
+                    <span class="step">1</span>
+                    <div>
+                        <div class="step-title">Seller lists &amp; drops off</div>
+                        <div class="step-desc">List online, drop at nearest Trustees.</div>
+                    </div>
+                </li>
+                <li>
+                    <span class="step">2</span>
+                    <div>
+                        <div class="step-title">We verify the item</div>
+                        <div class="step-desc">Staff inspect it matches the listing.</div>
+                    </div>
+                </li>
+                <li>
+                    <span class="step">3</span>
+                    <div>
+                        <div class="step-title">Buyer collects safely</div>
+                        <div class="step-desc">Collect in-store or request delivery.</div>
+                    </div>
+                </li>
+            </ol>
+        </aside>
+    </section>
+    <h1 id="browse-listings">Browse Verified Listings</h1>
     <p class="tr-muted" style="margin-top:-4px;"><?= count($listings) ?> verified item<?= count($listings) === 1 ? '' : 's' ?> · tap a card for details</p>
 
     <form method="get" class="search-form" data-live-search="search_api.php">

@@ -87,13 +87,14 @@ include "../Includes/header.php";
         <p></p>
         <div class="d-flex gap-2">
             <?php if (!$is_owner): ?>
-                <p><button class="btn btn-primary" onclick="location.href='../Orders/checkout.php?id=<?php echo (int)$listing['id']; ?>'">Buy Now</button></p>
                 <?php if ($viewer_id !== null): ?>
+                    <p><button class="btn btn-primary" onclick="location.href='../Orders/checkout.php?id=<?php echo (int)$listing['id']; ?>'">Buy Now</button></p>
                     <p><a class="btn btn-primary"
                         href="../Messages/conversation.php?with=<?php echo (int)$listing['user_id']; ?>&listing=<?php echo (int)$listing['id']; ?>">
                         Contact Seller
                     </a></p>
                 <?php else: ?>
+                    <p><a class="btn btn-primary" href="/ITECA-Website/login.php">Log in to buy</a></p>
                     <p><a class="btn btn-primary" href="/ITECA-Website/login.php">Log in to contact seller</a></p>
                 <?php endif; ?>
             <?php endif; ?>
