@@ -1,8 +1,8 @@
 <?php
-include '../Includes/auth_admin.php';
-include '../Includes/db.php';
-include '../Includes/escrow.php';
-include '../Includes/notifications.php';
+require_once '../Includes/auth_admin.php';
+require_once '../Includes/db.php';
+require_once '../Includes/escrow.php';
+require_once '../Includes/notifications.php';
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
@@ -140,7 +140,7 @@ $stmt->close();
 $statuses = ['received', 'inspecting', 'ready', 'awaiting_proof', 'pending_admin_approval', 'delivered', 'cancelled', 'refunded', 'disputed'];
 $methods  = ['collect', 'delivery', 'meetup'];
 
-include '../Includes/header.php';
+require_once '../Includes/header.php';
 ?>
 
 <div class="container">
@@ -156,6 +156,15 @@ include '../Includes/header.php';
         <?php endif; ?>
     </form>
 
+    <?php if (!empty($orders)): ?>
+        <?php foreach ($orders as $order): ?>
+            <?php $fid = 'form-post-order-' . (int)$order['id']; ?>
+            <form id="<?php echo $fid; ?>" method="POST" action="orders.php">
+                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+                <input type="hidden" name="order_id" value="<?php echo (int)$order['id']; ?>">
+            </form>
+        <?php endforeach; ?>
+    <?php endif; ?>
     <table>
         <thead>
             <tr>
@@ -176,48 +185,45 @@ include '../Includes/header.php';
                 <tr><td colspan="10">No orders found.</td></tr>
             <?php else: ?>
                 <?php foreach ($orders as $order): ?>
+                    <?php $fid = 'form-post-order-' . (int)$order['id']; ?>
                     <tr>
-                        <form method="POST" action="orders.php">
-                            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
-                            <input type="hidden" name="order_id" value="<?php echo (int)$order['id']; ?>">
-                            <td>#<?php echo (int)$order['id']; ?></td>
-                            <td><?php echo htmlspecialchars($order['user_name'] ?? 'Deleted user'); ?></td>
-                            <td><?php echo htmlspecialchars($order['listing_title'] ?? '—'); ?></td>
-                            <td><input type="number" name="quantity" min="1" value="<?php echo (int)$order['quantity']; ?>" required></td>
-                            <td><input type="number" step="0.01" min="0" name="total_price" value="<?php echo htmlspecialchars($order['total_price'] ?? '0'); ?>" required></td>
-                            <td>
-                                <select name="delivery_method">
-                                    <?php foreach ($methods as $m): ?>
-                                        <option value="<?php echo $m; ?>" <?php if ($order['delivery_method'] === $m) echo 'selected'; ?>><?php echo ucfirst($m); ?></option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </td>
-                            <td><input type="text" name="delivery_address" value="<?php echo htmlspecialchars($order['delivery_address'] ?? ''); ?>"></td>
-                            <td>
-                                <?php if (!empty($order['delivery_proof_image'])): ?>
-                                    <a href="../<?php echo htmlspecialchars($order['delivery_proof_image']); ?>" target="_blank">View</a>
-                                <?php else: ?>
-                                    —
-                                <?php endif; ?>
-                            </td>
-                            <td>
-                                <select name="status">
-                                    <?php foreach ($statuses as $s): ?>
-                                        <option value="<?php echo $s; ?>" <?php if ($order['status'] === $s) echo 'selected'; ?>><?php echo htmlspecialchars(order_status_label($s)); ?></option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </td>
-                            <td>
-                                <button type="submit" name="action" value="update" class="btn btn-primary">Save</button>
-                                <?php if ($order['status'] === 'pending_admin_approval'): ?>
-                                    <button type="submit" name="action" value="approve_proof" class="btn btn-success" onclick="return confirm('Approve delivery proof and release escrow funds to the seller?');">Approve proof</button>
-                                    <button type="submit" name="action" value="reject_proof" class="btn btn-danger" onclick="return confirm('Reject this delivery proof? The seller will be asked to re-upload.');">Reject proof</button>
-                                <?php endif; ?>
-                                <?php if (order_is_terminal($order['status'])): ?>
-                                    <button type="submit" name="action" value="delete" class="btn btn-danger" onclick="return confirm('Delete this order? This cannot be undone.');">Delete</button>
-                                <?php endif; ?>
-                            </td>
-                        </form>
+                        <td>#<?php echo (int)$order['id']; ?></td>
+                        <td><?php echo htmlspecialchars($order['user_name'] ?? 'Deleted user'); ?></td>
+                        <td><?php echo htmlspecialchars($order['listing_title'] ?? '—'); ?></td>
+                        <td><input form="<?php echo $fid; ?>" type="number" name="quantity" min="1" value="<?php echo (int)$order['quantity']; ?>" required></td>
+                        <td><input form="<?php echo $fid; ?>" type="number" step="0.01" min="0" name="total_price" value="<?php echo htmlspecialchars($order['total_price'] ?? '0'); ?>" required></td>
+                        <td>
+                            <select form="<?php echo $fid; ?>" name="delivery_method">
+                                <?php foreach ($methods as $m): ?>
+                                    <option value="<?php echo $m; ?>" <?php if ($order['delivery_method'] === $m) echo 'selected'; ?>><?php echo ucfirst($m); ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </td>
+                        <td><input form="<?php echo $fid; ?>" type="text" name="delivery_address" value="<?php echo htmlspecialchars($order['delivery_address'] ?? ''); ?>"></td>
+                        <td>
+                            <?php if (!empty($order['delivery_proof_image'])): ?>
+                                <a href="../<?php echo htmlspecialchars($order['delivery_proof_image']); ?>" target="_blank">View</a>
+                            <?php else: ?>
+                                —
+                            <?php endif; ?>
+                        </td>
+                        <td>
+                            <select form="<?php echo $fid; ?>" name="status">
+                                <?php foreach ($statuses as $s): ?>
+                                    <option value="<?php echo $s; ?>" <?php if ($order['status'] === $s) echo 'selected'; ?>><?php echo htmlspecialchars(order_status_label($s)); ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </td>
+                        <td>
+                            <button form="<?php echo $fid; ?>" type="submit" name="action" value="update" class="btn btn-primary">Save</button>
+                            <?php if ($order['status'] === 'pending_admin_approval'): ?>
+                                <button form="<?php echo $fid; ?>" type="submit" name="action" value="approve_proof" class="btn btn-success" onclick="return confirm('Approve delivery proof and release escrow funds to the seller?');">Approve proof</button>
+                                <button form="<?php echo $fid; ?>" type="submit" name="action" value="reject_proof" class="btn btn-danger" onclick="return confirm('Reject this delivery proof? The seller will be asked to re-upload.');">Reject proof</button>
+                            <?php endif; ?>
+                            <?php if (order_is_terminal($order['status'])): ?>
+                                <button form="<?php echo $fid; ?>" type="submit" name="action" value="delete" class="btn btn-danger" onclick="return confirm('Delete this order? This cannot be undone.');">Delete</button>
+                            <?php endif; ?>
+                        </td>
                     </tr>
                 <?php endforeach; ?>
             <?php endif; ?>

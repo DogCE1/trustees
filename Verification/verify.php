@@ -1,6 +1,7 @@
 <?php
-include "../Includes/auth.php";
-include "../Includes/db.php";
+require_once "../Includes/auth.php";
+require_once "../Includes/db.php";
+require_once "../Includes/rate_limit.php";
 
 $user_id = $_SESSION['user_id'];
 
@@ -78,14 +79,18 @@ function save_uploaded_file($field, $allowed_mimes, $target_subdir) {
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
-        die("CSRF token validation failed."); // can be replaced with a more user-friendly error handling in production
+        set_flash("Invalid CSRF token. Please try again.", "danger");
+        header("Location: Verify.php");
+        exit();
     }
     $full_name = trim($_POST['full_name'] ?? '');
     $id_number = trim($_POST['id_number'] ?? '');
     $address   = trim($_POST['address'] ?? '');
     $consent   = isset($_POST['consent']);
 
-    if ($full_name === '' || $id_number === '' || $address === '') {
+    if (rate_limit_exceeded($conn, 'verify_submit', (string)$user_id, 3, 3600)) {
+        $error = "Too many verification submissions. Please wait an hour and try again.";
+    } elseif ($full_name === '' || $id_number === '' || $address === '') {
         $error = "Please fill in all personal information fields.";
     } elseif (!preg_match('/^[A-Za-z0-9\-]{6,20}$/', $id_number)) {
         $error = "ID number must be 6-20 characters (letters, digits, or hyphens).";
@@ -132,6 +137,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $stmt->bind_param("issssss", $user_id, $id_path, $selfie_path, $video_path, $full_name, $id_number, $address);
 
             if ($stmt->execute()) {
+                rate_limit_log($conn, 'verify_submit', (string)$user_id);
                 $success = "Verification submitted. An admin will review your details shortly.";
                 $stmt->close();
 
@@ -148,7 +154,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
 }
 
-include "../Includes/header.php";
+require_once "../Includes/header.php";
 ?>
 
 <div class="container">

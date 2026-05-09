@@ -1,6 +1,6 @@
 <?php
-include '../Includes/auth_admin.php';
-include '../Includes/db.php';
+require_once '../Includes/auth_admin.php';
+require_once '../Includes/db.php';
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
@@ -68,7 +68,7 @@ $stmt->close();
 $conditions = ['new', 'like_new', 'good', 'fair', 'poor', 'refurbished'];
 $statuses   = ['pending', 'verified', 'sold', 'rejected'];
 
-include '../Includes/header.php';
+require_once '../Includes/header.php';
 ?>
 
 <div class="container">
@@ -84,6 +84,15 @@ include '../Includes/header.php';
         <?php endif; ?>
     </form>
 
+    <?php if (!empty($listings)): ?>
+        <?php foreach ($listings as $listing): ?>
+            <?php $fid = 'form-post-listing-' . (int)$listing['id']; ?>
+            <form id="<?php echo $fid; ?>" method="POST" action="listings.php">
+                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+                <input type="hidden" name="listing_id" value="<?php echo (int)$listing['id']; ?>">
+            </form>
+        <?php endforeach; ?>
+    <?php endif; ?>
     <table>
         <thead>
             <tr>
@@ -104,36 +113,33 @@ include '../Includes/header.php';
                 <tr><td colspan="10">No listings yet.</td></tr>
             <?php else: ?>
                 <?php foreach ($listings as $listing): ?>
+                    <?php $fid = 'form-post-listing-' . (int)$listing['id']; ?>
                     <tr>
-                        <form method="POST" action="listings.php">
-                            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
-                            <input type="hidden" name="listing_id" value="<?php echo (int)$listing['id']; ?>">
-                            <td><?php echo (int)$listing['id']; ?></td>
-                            <td><?php echo htmlspecialchars($listing['seller_name'] ?? '—'); ?></td>
-                            <td><input type="text" name="title" value="<?php echo htmlspecialchars($listing['title'] ?? ''); ?>" required></td>
-                            <td><textarea name="description" rows="2"><?php echo htmlspecialchars($listing['description'] ?? ''); ?></textarea></td>
-                            <td><input type="number" name="price" step="0.01" min="0" value="<?php echo htmlspecialchars($listing['price'] ?? '0'); ?>" required></td>
-                            <td><input type="text" name="category" value="<?php echo htmlspecialchars($listing['category'] ?? ''); ?>"></td>
-                            <td>
-                                <select name="item_condition">
-                                    <?php foreach ($conditions as $c): ?>
-                                        <option value="<?php echo $c; ?>" <?php if ($listing['item_condition'] === $c) echo 'selected'; ?>><?php echo ucfirst(str_replace('_', ' ', $c)); ?></option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </td>
-                            <td>
-                                <select name="status">
-                                    <?php foreach ($statuses as $s): ?>
-                                        <option value="<?php echo $s; ?>" <?php if ($listing['status'] === $s) echo 'selected'; ?>><?php echo ucfirst($s); ?></option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </td>
-                            <td><textarea name="rejection_reason" rows="2" placeholder="(optional)"><?php echo htmlspecialchars($listing['rejection_reason'] ?? ''); ?></textarea></td>
-                            <td>
-                                <button type="submit" name="action" value="update" class="btn btn-primary">Save</button>
-                                <button type="submit" name="action" value="delete" class="btn btn-danger" onclick="return confirm('Delete this listing? This cannot be undone.');">Delete</button>
-                            </td>
-                        </form>
+                        <td><?php echo (int)$listing['id']; ?></td>
+                        <td><?php echo htmlspecialchars($listing['seller_name'] ?? '—'); ?></td>
+                        <td><input form="<?php echo $fid; ?>" type="text" name="title" value="<?php echo htmlspecialchars($listing['title'] ?? ''); ?>" required></td>
+                        <td><textarea form="<?php echo $fid; ?>" name="description" rows="2"><?php echo htmlspecialchars($listing['description'] ?? ''); ?></textarea></td>
+                        <td><input form="<?php echo $fid; ?>" type="number" name="price" step="0.01" min="0" value="<?php echo htmlspecialchars($listing['price'] ?? '0'); ?>" required></td>
+                        <td><input form="<?php echo $fid; ?>" type="text" name="category" value="<?php echo htmlspecialchars($listing['category'] ?? ''); ?>"></td>
+                        <td>
+                            <select form="<?php echo $fid; ?>" name="item_condition">
+                                <?php foreach ($conditions as $c): ?>
+                                    <option value="<?php echo $c; ?>" <?php if ($listing['item_condition'] === $c) echo 'selected'; ?>><?php echo ucfirst(str_replace('_', ' ', $c)); ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </td>
+                        <td>
+                            <select form="<?php echo $fid; ?>" name="status">
+                                <?php foreach ($statuses as $s): ?>
+                                    <option value="<?php echo $s; ?>" <?php if ($listing['status'] === $s) echo 'selected'; ?>><?php echo ucfirst($s); ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </td>
+                        <td><textarea form="<?php echo $fid; ?>" name="rejection_reason" rows="2" placeholder="(optional)"><?php echo htmlspecialchars($listing['rejection_reason'] ?? ''); ?></textarea></td>
+                        <td>
+                            <button form="<?php echo $fid; ?>" type="submit" name="action" value="update" class="btn btn-primary">Save</button>
+                            <button form="<?php echo $fid; ?>" type="submit" name="action" value="delete" class="btn btn-danger" onclick="return confirm('Delete this listing? This cannot be undone.');">Delete</button>
+                        </td>
                     </tr>
                 <?php endforeach; ?>
             <?php endif; ?>

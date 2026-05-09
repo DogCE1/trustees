@@ -1,6 +1,6 @@
 <?php
-include "../Includes/auth.php";
-include "../Includes/db.php";
+require_once "../Includes/auth.php";
+require_once "../Includes/db.php";
 
 $user_id = $_SESSION['user_id'];
 
@@ -49,7 +49,7 @@ if (!empty($listings)) {
 
 $flash_success = get_flash('success');
 
-include "../Includes/header.php";
+require_once "../Includes/header.php";
 ?>
 
 <div class="container">

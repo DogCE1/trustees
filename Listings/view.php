@@ -1,8 +1,4 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
 require_once __DIR__ . '/../Includes/db.php';
 
 if (!isset($_GET['id'])) {
@@ -36,7 +32,7 @@ if ($listing) {
 $viewer_id = $_SESSION['user_id'] ?? null;
 $is_owner  = $listing && $viewer_id !== null && (int)$listing['user_id'] === (int)$viewer_id;
 
-include "../Includes/header.php";
+require_once "../Includes/header.php";
 ?>
 
 
@@ -106,5 +102,5 @@ include "../Includes/header.php";
 
 
 <?php
-include "../Includes/footer.php";
+require_once "../Includes/footer.php";
 ?>

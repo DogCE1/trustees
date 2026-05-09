@@ -1,6 +1,6 @@
 <?php
-include "../Includes/auth.php";
-include "../Includes/db.php";
+require_once "../Includes/auth.php";
+require_once "../Includes/db.php";
 
 if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
     header("Location: /ITECA-Website/Admin/dashboard.php");
@@ -158,7 +158,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
-include "../Includes/header.php";
+require_once "../Includes/header.php";
 ?>
 
     <div class="container">
@@ -200,5 +200,5 @@ include "../Includes/header.php";
     </div>
 
 <?php
-include "../Includes/footer.php";
+require_once "../Includes/footer.php";
 ?>

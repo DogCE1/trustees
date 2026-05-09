@@ -1,8 +1,8 @@
 <?php
-include "../Includes/auth_admin.php";
-include "../Includes/db.php";
-include "../Includes/escrow.php";
-include "../Includes/notifications.php";
+require_once "../Includes/auth_admin.php";
+require_once "../Includes/db.php";
+require_once "../Includes/escrow.php";
+require_once "../Includes/notifications.php";
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
@@ -137,7 +137,7 @@ $stmt->close();
 
 $manual_statuses = ['open', 'closed'];
 
-include "../Includes/header.php";
+require_once "../Includes/header.php";
 ?>
 
 <div class="container">
@@ -162,6 +162,18 @@ include "../Includes/header.php";
         <?php endif; ?>
     </form>
 
+    <?php if (!empty($disputes)): ?>
+        <?php foreach ($disputes as $d): ?>
+            <?php $fid = 'form-post-dispute-' . (int)$d['id']; ?>
+            <form id="<?php echo $fid; ?>" method="post" action="disputes.php">
+                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+                <input type="hidden" name="dispute_id" value="<?php echo (int)$d['id']; ?>">
+                <?php if ($d['status'] === 'resolved'): ?>
+                    <input type="hidden" name="status" value="resolved">
+                <?php endif; ?>
+            </form>
+        <?php endforeach; ?>
+    <?php endif; ?>
     <table>
         <thead>
             <tr>
@@ -182,66 +194,62 @@ include "../Includes/header.php";
             <?php else: ?>
                 <?php foreach ($disputes as $d): ?>
                     <?php
+                        $fid = 'form-post-dispute-' . (int)$d['id'];
                         $can_resolve = !empty($d['order_id'])
                             && $d['status'] === 'open'
                             && $d['order_status']
                             && !order_is_terminal($d['order_status']);
                     ?>
                     <tr>
-                        <form method="post" action="disputes.php">
-                            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
-                            <input type="hidden" name="dispute_id" value="<?php echo (int)$d['id']; ?>">
-                            <td>#<?php echo (int)$d['id']; ?></td>
-                            <td>
-                                <?php if (!empty($d['order_id'])): ?>
-                                    #<?php echo (int)$d['order_id']; ?>
-                                    <?php if (!empty($d['total_price'])): ?>
-                                        <br><small>R<?php echo number_format((float)$d['total_price'], 2); ?></small>
-                                    <?php endif; ?>
-                                    <?php if (!empty($d['order_status'])): ?>
-                                        <br><small><em><?php echo htmlspecialchars(order_status_label($d['order_status'])); ?></em></small>
-                                    <?php endif; ?>
-                                <?php else: ?>
-                                    <em>n/a</em>
+                        <td>#<?php echo (int)$d['id']; ?></td>
+                        <td>
+                            <?php if (!empty($d['order_id'])): ?>
+                                #<?php echo (int)$d['order_id']; ?>
+                                <?php if (!empty($d['total_price'])): ?>
+                                    <br><small>R<?php echo number_format((float)$d['total_price'], 2); ?></small>
                                 <?php endif; ?>
-                            </td>
-                            <td><?php echo htmlspecialchars($d['listing_title'] ?? '—'); ?></td>
-                            <td>
-                                <?php echo htmlspecialchars($d['reporter_name'] ?? 'Deleted user'); ?>
-                                <?php if (!empty($d['reporter_email'])): ?>
-                                    <br><small><?php echo htmlspecialchars($d['reporter_email']); ?></small>
+                                <?php if (!empty($d['order_status'])): ?>
+                                    <br><small><em><?php echo htmlspecialchars(order_status_label($d['order_status'])); ?></em></small>
                                 <?php endif; ?>
-                            </td>
-                            <td><textarea name="reason" rows="3" cols="30"><?php echo htmlspecialchars($d['reason'] ?? ''); ?></textarea></td>
-                            <td>
-                                <?php if (!empty($d['evidence'])): ?>
-                                    <a href="../<?php echo htmlspecialchars($d['evidence']); ?>" target="_blank">View</a>
-                                <?php else: ?>
-                                    —
-                                <?php endif; ?>
-                            </td>
-                            <td><?php echo date("Y-m-d H:i", strtotime($d['created_at'])); ?></td>
-                            <td>
-                                <?php if ($d['status'] === 'resolved'): ?>
-                                    <em>Resolved</em>
-                                    <input type="hidden" name="status" value="resolved">
-                                <?php else: ?>
-                                    <select name="status">
-                                        <?php foreach ($manual_statuses as $s): ?>
-                                            <option value="<?php echo $s; ?>" <?php if ($d['status'] === $s) echo 'selected'; ?>><?php echo ucfirst($s); ?></option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                <?php endif; ?>
-                            </td>
-                            <td>
-                                <button type="submit" name="action" value="update" class="btn btn-primary">Save</button>
-                                <?php if ($can_resolve): ?>
-                                    <button type="submit" name="action" value="resolve_release" class="btn btn-success" onclick="return confirm('Resolve in seller\'s favor and release escrow funds to the seller?');">Release to seller</button>
-                                    <button type="submit" name="action" value="resolve_refund" class="btn btn-danger" onclick="return confirm('Resolve in buyer\'s favor and refund the escrow to the buyer?');">Refund buyer</button>
-                                <?php endif; ?>
-                                <button type="submit" name="action" value="delete" class="btn btn-danger" onclick="return confirm('Delete this dispute? This cannot be undone.');">Delete</button>
-                            </td>
-                        </form>
+                            <?php else: ?>
+                                <em>n/a</em>
+                            <?php endif; ?>
+                        </td>
+                        <td><?php echo htmlspecialchars($d['listing_title'] ?? '—'); ?></td>
+                        <td>
+                            <?php echo htmlspecialchars($d['reporter_name'] ?? 'Deleted user'); ?>
+                            <?php if (!empty($d['reporter_email'])): ?>
+                                <br><small><?php echo htmlspecialchars($d['reporter_email']); ?></small>
+                            <?php endif; ?>
+                        </td>
+                        <td><textarea form="<?php echo $fid; ?>" name="reason" rows="3" cols="30"><?php echo htmlspecialchars($d['reason'] ?? ''); ?></textarea></td>
+                        <td>
+                            <?php if (!empty($d['evidence'])): ?>
+                                <a href="../<?php echo htmlspecialchars($d['evidence']); ?>" target="_blank">View</a>
+                            <?php else: ?>
+                                —
+                            <?php endif; ?>
+                        </td>
+                        <td><?php echo date("Y-m-d H:i", strtotime($d['created_at'])); ?></td>
+                        <td>
+                            <?php if ($d['status'] === 'resolved'): ?>
+                                <em>Resolved</em>
+                            <?php else: ?>
+                                <select form="<?php echo $fid; ?>" name="status">
+                                    <?php foreach ($manual_statuses as $s): ?>
+                                        <option value="<?php echo $s; ?>" <?php if ($d['status'] === $s) echo 'selected'; ?>><?php echo ucfirst($s); ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            <?php endif; ?>
+                        </td>
+                        <td>
+                            <button form="<?php echo $fid; ?>" type="submit" name="action" value="update" class="btn btn-primary">Save</button>
+                            <?php if ($can_resolve): ?>
+                                <button form="<?php echo $fid; ?>" type="submit" name="action" value="resolve_release" class="btn btn-success" onclick="return confirm('Resolve in seller\'s favor and release escrow funds to the seller?');">Release to seller</button>
+                                <button form="<?php echo $fid; ?>" type="submit" name="action" value="resolve_refund" class="btn btn-danger" onclick="return confirm('Resolve in buyer\'s favor and refund the escrow to the buyer?');">Refund buyer</button>
+                            <?php endif; ?>
+                            <button form="<?php echo $fid; ?>" type="submit" name="action" value="delete" class="btn btn-danger" onclick="return confirm('Delete this dispute? This cannot be undone.');">Delete</button>
+                        </td>
                     </tr>
                 <?php endforeach; ?>
             <?php endif; ?>

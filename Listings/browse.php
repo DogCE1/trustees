@@ -86,7 +86,7 @@ $stmt->execute();
 $listings = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 $stmt->close();
 
-include '../Includes/header.php';
+require_once '../Includes/header.php';
 
 function listing_glyph($title) {
     $clean = preg_replace('/[^A-Za-z0-9 ]/', '', (string)$title);
