@@ -1,5 +1,6 @@
 <?php
-include "Includes/db.php";
+require_once "Includes/db.php";
+require_once "Includes/rate_limit.php";
 
 $register_error = '';
 
@@ -9,6 +10,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         header("Location: register.php");
         exit();
     }
+
+    $ip = $_SERVER['REMOTE_ADDR'];
+    if (rate_limit_exceeded($conn, 'register', $ip, 5, 600)){
+        set_flash('error', "Too many registration attempts. Please try again later.");
+        header("Location: register.php");
+        exit();
+    }
+    rate_limit_log($conn, 'register', $ip);
 
     $name = $_POST['name'] ?? '';
     $surname = $_POST['surname'] ?? '';
@@ -37,13 +46,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         header("Location: index.php");
         exit();
     } elseif (mysqli_errno($conn) === 1062) {
-        $register_error = "An account with this email already exists.";
-    } else {
         $register_error = "Registration failed. Please try again.";
     }
 }
 
-include "Includes/header.php";
+require_once "Includes/header.php";
 ?>
 
 
@@ -63,5 +70,5 @@ include "Includes/header.php";
 </div>
 
 <?php
-include "Includes/footer.php";
+require_once "Includes/footer.php";
 ?>

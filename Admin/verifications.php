@@ -1,7 +1,7 @@
 <?php
-include '../Includes/auth_admin.php';
-include '../Includes/db.php';
-include '../Includes/notifications.php';
+require_once '../Includes/auth_admin.php';
+require_once '../Includes/db.php';
+require_once '../Includes/notifications.php';
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
@@ -149,7 +149,7 @@ $stmt->close();
 
 $flash_success = get_flash('success');
 
-include '../Includes/header.php';
+require_once '../Includes/header.php';
 
 function video_mime_for($path) {
     $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));

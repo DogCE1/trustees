@@ -1,5 +1,5 @@
 <?php
-include "Includes/db.php";
+require_once "Includes/db.php";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
      if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
@@ -66,7 +66,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit();
     }
 }
-include "Includes/header.php";
+require_once "Includes/header.php";
 ?>
 
 
@@ -82,5 +82,5 @@ include "Includes/header.php";
 </div>
 
 <?php
-include "Includes/footer.php";
+require_once "Includes/footer.php";
 ?>

@@ -1,6 +1,6 @@
 <?php
-include "../Includes/auth.php";
-include "../Includes/db.php";
+require_once "../Includes/auth.php";
+require_once "../Includes/db.php";
 
 $user_id = (int)$_SESSION['user_id'];
 
@@ -81,7 +81,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
 }
 
-include "../Includes/header.php";
+require_once "../Includes/header.php";
 ?>
 
 <div class="container">

@@ -247,6 +247,22 @@ CREATE TABLE `wallet_transactions` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `rate limits`
+--
+CREATE TABLE `rate_events` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `action` VARCHAR(50) NOT NULL,
+  `key_value` VARCHAR(100) NOT NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `action_key_time` (`action`, `key_value`, `created_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
 --
 -- Indexes for dumped tables
 --

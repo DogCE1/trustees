@@ -1,6 +1,6 @@
 <?php
-include "../Includes/auth_admin.php";
-include "../Includes/db.php";
+require_once "../Includes/auth_admin.php";
+require_once "../Includes/db.php";
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
@@ -92,7 +92,7 @@ if ($search !== '') {
     }
 }
 
-include "../Includes/header.php";
+require_once "../Includes/header.php";
 ?>
 
 <div class="container">
@@ -111,6 +111,13 @@ include "../Includes/header.php";
     <?php if (empty($users)): ?>
         <p>No users match the current search.</p>
     <?php else: ?>
+    <?php foreach ($users as $user): ?>
+        <?php $fid = 'form-post-user-' . (int)$user['id']; ?>
+        <form id="<?php echo $fid; ?>" method="POST" action="users.php">
+            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+            <input type="hidden" name="user_id" value="<?php echo (int)$user['id']; ?>">
+        </form>
+    <?php endforeach; ?>
     <table>
         <thead>
             <tr>
@@ -126,32 +133,29 @@ include "../Includes/header.php";
         </thead>
         <tbody>
             <?php foreach ($users as $user): ?>
+                <?php $fid = 'form-post-user-' . (int)$user['id']; ?>
                 <tr>
-                    <form method="POST" action="users.php">
-                        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
-                        <input type="hidden" name="user_id" value="<?php echo (int)$user['id']; ?>">
-                        <td><?php echo (int)$user['id']; ?></td>
-                        <td><input type="text" name="name" value="<?php echo htmlspecialchars($user['name'] ?? ''); ?>" required></td>
-                        <td><input type="text" name="surname" value="<?php echo htmlspecialchars($user['surname'] ?? ''); ?>"></td>
-                        <td><input type="email" name="email" value="<?php echo htmlspecialchars($user['email'] ?? ''); ?>" required></td>
-                        <td><input type="text" name="phonenr" value="<?php echo htmlspecialchars($user['phonenr'] ?? ''); ?>"></td>
-                        <td>
-                            <select name="role">
-                                <option value="buyer" <?php if ($user['role'] === 'buyer') echo 'selected'; ?>>Buyer</option>
-                                <option value="seller" <?php if ($user['role'] === 'seller') echo 'selected'; ?>>Seller</option>
-                                <option value="admin" <?php if ($user['role'] === 'admin') echo 'selected'; ?>>Admin</option>
-                            </select>
-                        </td>
-                        <td>
-                            <input type="checkbox" name="is_verified" value="1" <?php if ($user['is_verified']) echo 'checked'; ?>>
-                        </td>
-                        <td>
-                            <button type="submit" name="action" value="update" class="btn btn-primary">Save</button>
-                            <?php if ((int)$user['id'] !== (int)$_SESSION['user_id']): ?>
-                                <button type="submit" name="action" value="delete" class="btn btn-danger" onclick="return confirm('Delete this user? This cannot be undone.');">Delete</button>
-                            <?php endif; ?>
-                        </td>
-                    </form>
+                    <td><?php echo (int)$user['id']; ?></td>
+                    <td><input form="<?php echo $fid; ?>" type="text" name="name" value="<?php echo htmlspecialchars($user['name'] ?? ''); ?>" required></td>
+                    <td><input form="<?php echo $fid; ?>" type="text" name="surname" value="<?php echo htmlspecialchars($user['surname'] ?? ''); ?>"></td>
+                    <td><input form="<?php echo $fid; ?>" type="email" name="email" value="<?php echo htmlspecialchars($user['email'] ?? ''); ?>" required></td>
+                    <td><input form="<?php echo $fid; ?>" type="text" name="phonenr" value="<?php echo htmlspecialchars($user['phonenr'] ?? ''); ?>"></td>
+                    <td>
+                        <select form="<?php echo $fid; ?>" name="role">
+                            <option value="buyer" <?php if ($user['role'] === 'buyer') echo 'selected'; ?>>Buyer</option>
+                            <option value="seller" <?php if ($user['role'] === 'seller') echo 'selected'; ?>>Seller</option>
+                            <option value="admin" <?php if ($user['role'] === 'admin') echo 'selected'; ?>>Admin</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input form="<?php echo $fid; ?>" type="checkbox" name="is_verified" value="1" <?php if ($user['is_verified']) echo 'checked'; ?>>
+                    </td>
+                    <td>
+                        <button form="<?php echo $fid; ?>" type="submit" name="action" value="update" class="btn btn-primary">Save</button>
+                        <?php if ((int)$user['id'] !== (int)$_SESSION['user_id']): ?>
+                            <button form="<?php echo $fid; ?>" type="submit" name="action" value="delete" class="btn btn-danger" onclick="return confirm('Delete this user? This cannot be undone.');">Delete</button>
+                        <?php endif; ?>
+                    </td>
                 </tr>
             <?php endforeach; ?>
         </tbody>

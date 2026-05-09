@@ -1,6 +1,7 @@
 <?php
-include "../Includes/auth.php";
-include "../Includes/db.php";
+require_once "../Includes/auth.php";
+require_once "../Includes/db.php";
+require_once "../Includes/rate_limit.php";
 
 $user_id = $_SESSION['user_id'];
 
@@ -37,6 +38,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['action'])) {
             $error = "Please enter a valid deposit amount greater than 0.";
         } elseif ($amount > 100000) {
             $error = "Maximum single deposit is R100 000.";
+        } elseif (rate_limit_exceeded($conn, 'wallet_deposit', (string)$user_id, 10, 3600)) {
+            $error = "Too many deposit attempts. Please try again later.";
         } else {
             $conn->begin_transaction();
             try {
@@ -58,6 +61,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['action'])) {
                 $stmt->close();
 
                 $conn->commit();
+                rate_limit_log($conn, 'wallet_deposit', (string)$user_id);
 
                 $success = "Deposited R" . number_format($amount, 2) . " successfully.";
                 $balance = $balance_after;
@@ -71,6 +75,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['action'])) {
             $error = "Please enter a valid withdrawal amount greater than 0.";
         } elseif ($amount > 100000) {
             $error = "Maximum single withdrawal is R100 000.";
+        } elseif (rate_limit_exceeded($conn, 'wallet_withdraw', (string)$user_id, 5, 3600)) {
+            $error = "Too many withdrawal attempts. Please try again later.";
         } else {
             $conn->begin_transaction();
             try {
@@ -98,6 +104,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['action'])) {
                 $stmt->close();
 
                 $conn->commit();
+                rate_limit_log($conn, 'wallet_withdraw', (string)$user_id);
 
                 $success = "Withdrew R" . number_format($amount, 2) . " successfully.";
                 $balance = $balance_after;
@@ -121,7 +128,7 @@ $stmt->execute();
 $transactions = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 $stmt->close();
 
-include "../Includes/header.php";
+require_once "../Includes/header.php";
 ?>
 
 <div class="container">
@@ -159,7 +166,7 @@ include "../Includes/header.php";
                 <input type="number" name="amount" id="withdraw_amount" min="1" step="0.01" max="<?php echo htmlspecialchars((string)$balance); ?>" required>
                 <button type="submit" name="action" value="withdraw" class="btn btn-secondary" <?php if ($balance <= 0) echo 'disabled'; ?>>Withdraw</button>
             </form>
-            <p><small>Available to withdraw: R<?php echo number_format($balance, 2); ?>. Funds in escrow for active orders cannot be withdrawn.</small></p>
+            <p><small>Available to withdraw: R<?php echo number_format($balance, 2); ?>. Withdrawals come straight out of this balance.</small></p>
         </div>
     </div>
 

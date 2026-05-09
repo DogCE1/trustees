@@ -1,7 +1,7 @@
 <?php
-include "../Includes/auth.php";
-include "../Includes/db.php";
-include "../Includes/notifications.php";
+require_once "../Includes/auth.php";
+require_once "../Includes/db.php";
+require_once "../Includes/notifications.php";
 
 $unavailable = false;
 $user_id = $_SESSION['user_id'];
@@ -167,7 +167,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && !$error) {
     }
 }
 
-include "../Includes/header.php";
+require_once "../Includes/header.php";
 ?>
 
 <div class="container">

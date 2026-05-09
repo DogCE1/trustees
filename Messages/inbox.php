@@ -1,5 +1,5 @@
 <?php
-include "../Includes/auth.php";
+require_once "../Includes/auth.php";
 require_once __DIR__ . '/../Includes/db.php';
 
 $me = (int)$_SESSION['user_id'];
@@ -41,7 +41,7 @@ $stmt->execute();
 $threads = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 $stmt->close();
 
-include "../Includes/header.php";
+require_once "../Includes/header.php";
 ?>
 
 <div class="container">

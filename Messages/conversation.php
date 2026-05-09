@@ -2,6 +2,7 @@
 include "../Includes/auth.php";
 require_once __DIR__ . '/../Includes/db.php';
 require_once __DIR__ . '/../Includes/notifications.php';
+require_once __DIR__ . '/../Includes/rate_limit.php';
 
 $me      = (int)$_SESSION['user_id'];
 $with    = isset($_GET['with']) ? (int)$_GET['with'] : 0;
@@ -43,11 +44,18 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         exit();
     }
     $body = trim($_POST['body'] ?? '');
-    if ($body === '') {
+        if ($body === '') {
         $send_error = "Message can't be empty.";
     } elseif (mb_strlen($body) > 2000) {
         $send_error = "Message is too long (max 2000 characters).";
+    } elseif (rate_limit_exceeded($conn, 'message_send', (string)$me, 20, 60)) {
+        $send_error = "You're sending messages too fast. Please slow down.";
+    } elseif (rate_limit_exceeded($conn, 'message_to_user', "$me:$with", 10, 300)) {
+        $send_error = "You've sent many messages to this user recently. Please wait.";
     } else {
+        rate_limit_log($conn, 'message_send', (string)$me);
+        rate_limit_log($conn, 'message_to_user', "$me:$with");
+
         try {
             $stmt = $conn->prepare("INSERT INTO messages (sender_id, recipient_id, listing_id, body) VALUES (?, ?, ?, ?)");
             $stmt->bind_param("iiis", $me, $with, $listing, $body);

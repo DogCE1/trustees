@@ -1,8 +1,8 @@
 <?php
-include "../Includes/auth.php";
-include "../Includes/db.php";
-include "../Includes/escrow.php";
-include "../Includes/notifications.php";
+require_once "../Includes/auth.php";
+require_once "../Includes/db.php";
+require_once "../Includes/escrow.php";
+require_once "../Includes/notifications.php";
 
 $user_id = $_SESSION['user_id'];
 
@@ -123,7 +123,7 @@ $stmt->execute();
 $sales = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 $stmt->close();
 
-include "../Includes/header.php";
+require_once "../Includes/header.php";
 ?>
 
 <div class="container">

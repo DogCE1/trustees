@@ -1,6 +1,6 @@
 <?php
-include "../Includes/auth_admin.php";
-include "../Includes/db.php";
+require_once "../Includes/auth_admin.php";
+require_once "../Includes/db.php";
 
 $admin_id = $_SESSION['user_id'];
 
@@ -105,7 +105,7 @@ if (!$detail) {
     $stmt->close();
 }
 
-include "../Includes/header.php";
+require_once "../Includes/header.php";
 ?>
 
 <div class="container">

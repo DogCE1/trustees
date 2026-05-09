@@ -1,6 +1,6 @@
 <?php
-include "../Includes/auth_admin.php";
-include "../Includes/db.php";
+require_once "../Includes/auth_admin.php";
+require_once "../Includes/db.php";
 
 function scalar_count(mysqli $conn, string $sql): int {
     $r = $conn->query($sql);
@@ -25,7 +25,7 @@ $counts = [
 
 $attention_total = $counts['listings_pending'] + $counts['orders_proof'] + $counts['disputes_open'] + $counts['verifications_pending'];
 
-include "../Includes/header.php";
+require_once "../Includes/header.php";
 ?>
 
 <div class="container">

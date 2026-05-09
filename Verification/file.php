@@ -1,6 +1,6 @@
 <?php
-include "../Includes/auth_admin.php";
-include "../Includes/db.php";
+require_once "../Includes/auth_admin.php";
+require_once "../Includes/db.php";
 
 if (!isset($_GET['vid'], $_GET['field']) || !ctype_digit((string)$_GET['vid'])) {
     http_response_code(400);

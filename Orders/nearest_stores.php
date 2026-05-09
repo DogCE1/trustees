@@ -1,6 +1,6 @@
 <?php
-include "../Includes/auth.php";
-include "../Includes/db.php";
+require_once "../Includes/auth.php";
+require_once "../Includes/db.php";
 
 header("Content-Type: application/json; charset=utf-8");
 

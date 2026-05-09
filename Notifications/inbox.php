@@ -1,5 +1,5 @@
 <?php
-include "../Includes/auth.php";
+require_once "../Includes/auth.php";
 require_once __DIR__ . '/../Includes/db.php';
 require_once __DIR__ . '/../Includes/notifications.php';
 
@@ -73,7 +73,7 @@ $stmt->close();
 
 $unread_count = count_unread_notifications($conn, $user_id);
 
-include "../Includes/header.php";
+require_once "../Includes/header.php";
 ?>
 
 <div class="container">
