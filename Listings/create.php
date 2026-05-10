@@ -29,11 +29,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         header("Location: create.php");
         exit();
     }
-    $title       = $_POST['Title'];
-    $description = $_POST['Description'];
-    $price       = $_POST['Price'];
-    $category    = $_POST['Category'];
-    $condition   = $_POST['Condition'];
+    $title       = trim($_POST['Title'] ?? '');
+    $description = trim($_POST['Description'] ?? '');
+    $price       = $_POST['Price'] ?? '';
+    $category    = $_POST['Category'] ?? '';
+    $condition   = $_POST['Condition'] ?? '';
+
 
     $allowed_mimes = [
         'image/jpeg' => 'jpg',
@@ -43,7 +44,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $allowed_exts = ['jpg', 'jpeg', 'png', 'webp'];
     $max_images   = 5;
 
-    if (!isset($_FILES['images']) || !is_array($_FILES['images']['name'])) {
+    // Basic validation
+    if ($title === '' || $description === '' || $price === '' || $category === '' || $condition === '') {
+        $create_error = "All fields are required.";
+    } elseif (!is_numeric($price) || (float)$price < 0) {
+        $create_error = "Price must be a non-negative number.";
+    } elseif (mb_strlen($title) > 150){
+        $create_error = "Title cannot exceed 150 characters.";
+    } elseif (mb_strlen($description) > 5000) {
+        $create_error = "Description cannot exceed 5000 characters.";
+    } elseif (!isset($_FILES['images']) || !is_array($_FILES['images']['name'])) {
         $create_error = "Please upload at least one image.";
     } else {
         $files = $_FILES['images'];
@@ -62,7 +72,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $saved_paths = [];
 
     if (!$create_error) {
-        $target_dir = $_SERVER['DOCUMENT_ROOT'] . "/ITECA-Website/Uploads/listings/";
+        $target_dir = __DIR__ . "/../Uploads/listings/";
 
         for ($i = 0; $i < count($_FILES['images']['name']); $i++) {
             if ($_FILES['images']['error'][$i] === UPLOAD_ERR_NO_FILE) continue;

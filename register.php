@@ -28,9 +28,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $sql = "INSERT INTO users (name, surname, email, password, phonenr) VALUES (?, ?, ?, ?, ?)";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("sssss", $name, $surname, $email, $password, $phonenr);
-    @$stmt->execute();
-
-    if ($stmt->affected_rows > 0) {
+    try{
+        $stmt->execute();
         $new_id = $conn->insert_id;
 
         $role_stmt = $conn->prepare("SELECT role FROM users WHERE id = ?");
@@ -45,9 +44,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $_SESSION['role'] = $role_row['role'];
         header("Location: index.php");
         exit();
-    } elseif (mysqli_errno($conn) === 1062) {
+    } 
+    catch(mysqli_sql_exception $e){
         $register_error = "Registration failed. Please try again.";
+        error_log("register insert failed:" . $e->getMessage());
     }
+    
 }
 
 require_once "Includes/header.php";

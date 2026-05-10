@@ -96,6 +96,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $error = "ID number must be 6-20 characters (letters, digits, or hyphens).";
     } elseif (!$consent) {
         $error = "You must agree to the consent statement before submitting.";
+    }elseif (mb_strlen($full_name) > 200) {
+        $error = "Full name cannot exceed 200 characters.";
+    } elseif (mb_strlen($address) > 1000) {
+        $error = "Address cannot exceed 1000 characters.";
     } else {
         $image_mimes = [
             'image/jpeg' => ['jpg', 'jpeg'],

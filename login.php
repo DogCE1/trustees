@@ -1,5 +1,6 @@
 <?php
 require_once "Includes/db.php";
+require_once "Includes/account.php";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
      if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
@@ -51,6 +52,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     if ($success) {
+        // If the user previously requested account deletion and the grace period has expired,
+        // attempt the hard delete now (subject to the same active-order/wallet-balance checks).
+        if (account_grace_expired($row['delete_requested_at'] ?? null)) {
+            $reason = null;
+            if (account_can_be_deleted($conn, (int)$row['id'], $reason)) {
+                account_hard_delete($conn, (int)$row['id']);
+                set_flash('error', "Your account has been deleted as requested. Goodbye.");
+                header("Location: login.php");
+                exit();
+            }
+            // Blocked: log them in so they can resolve the blocker, then they'll see the banner.
+            set_flash('error', "Your scheduled deletion is blocked: $reason Cancel deletion or resolve the issue, then it will run on next login.");
+        }
+
+        session_regenerate_id(true);
         $_SESSION['user_id'] = $row['id'];
         $_SESSION['user_name'] = $row['name'];
         $_SESSION['role'] = $row['role'];

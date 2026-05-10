@@ -77,8 +77,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && !$error) {
 
     if (!in_array($delivery_method, $allowed_methods, true)) {
         $error = "Please select a valid delivery method.";
-    } elseif ($delivery_method === 'delivery' && $delivery_address === '') {
-        $error = "Delivery address is required for delivery orders.";
+    } elseif ($delivery_method === 'delivery' && mb_strlen($delivery_address) > 255) {
+        $error = "Delivery address is required and cannot exceed 255 characters.";
     } elseif ($delivery_method === 'meetup' && $meetup_store_id <= 0) {
         $error = "Please choose a meetup location.";
     } elseif ($delivery_method === 'meetup') {
