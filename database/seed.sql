@@ -9,6 +9,7 @@ SET FOREIGN_KEY_CHECKS = 0;
 
 DELETE FROM `messages`;
 DELETE FROM `login_attempts`;
+DELETE FROM `rate_events`;
 DELETE FROM `wallet_transactions`;
 DELETE FROM `disputes`;
 DELETE FROM `orders`;
@@ -40,7 +41,9 @@ INSERT INTO `stores` (`id`, `name`, `address`, `latitude`, `longitude`, `created
 (3, 'Rosebank Mall', 'Cradock Avenue, Rosebank, Johannesburg', -26.1454260, 28.0407340, '2026-04-20 09:00:00'),
 (4, 'Eastgate Shopping Centre', 'Bradford Road, Bedfordview, Johannesburg', -26.1838500, 28.1196700, '2026-04-20 09:00:00'),
 (5, 'Menlyn Park Shopping Centre', 'Atterbury Road, Menlyn, Pretoria', -25.7826800, 28.2761500, '2026-04-20 09:00:00'),
-(6, 'V&A Waterfront', 'Dock Road, Cape Town', -33.9028200, 18.4196700, '2026-04-20 09:00:00');
+(6, 'V&A Waterfront', 'Dock Road, Cape Town', -33.9028200, 18.4196700, '2026-04-20 09:00:00'),
+(7, 'Canal Walk', 'Century Boulevard, Century City, Cape Town', -33.8919800, 18.5119500, '2026-04-20 09:00:00'),
+(8, 'Gateway Theatre of Shopping', '1 Palm Boulevard, Umhlanga, Durban', -29.7274300, 31.0688300, '2026-04-20 09:00:00');
 
 INSERT INTO `listings` (`id`, `user_id`, `title`, `description`, `price`, `category`, `item_condition`, `image`, `status`, `rejection_reason`, `created_at`) VALUES
 (1, 2, 'Samsung Galaxy A14', 'Lightly used phone with charger and box. Battery health is excellent.', 1200.00, 'Electronics', 'good', 'Uploads/listings/phone_a14.jpg', 'verified', NULL, '2026-04-20 09:10:00'),
@@ -130,7 +133,7 @@ INSERT INTO `login_attempts` (`id`, `email`, `ip`, `success`, `attempted_at`) VA
 (6, 'admin@trustees.co.za', '127.0.0.1', 1, '2026-04-24 08:22:14');
 
 ALTER TABLE `users` AUTO_INCREMENT = 11;
-ALTER TABLE `stores` AUTO_INCREMENT = 7;
+ALTER TABLE `stores` AUTO_INCREMENT = 9;
 ALTER TABLE `listings` AUTO_INCREMENT = 11;
 ALTER TABLE `listing_images` AUTO_INCREMENT = 9;
 ALTER TABLE `wallet` AUTO_INCREMENT = 11;
@@ -141,5 +144,6 @@ ALTER TABLE `notifications` AUTO_INCREMENT = 6;
 ALTER TABLE `messages` AUTO_INCREMENT = 5;
 ALTER TABLE `disputes` AUTO_INCREMENT = 2;
 ALTER TABLE `login_attempts` AUTO_INCREMENT = 7;
+ALTER TABLE `rate_events` AUTO_INCREMENT = 1;
 
 COMMIT;

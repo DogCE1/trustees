@@ -58,6 +58,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $error = "Please describe the issue.";
         } elseif (strlen($reason) > 2000) {
             $error = "Reason is too long (max 2000 characters).";
+        } elseif (mb_strlen($reason) > 2000){
+            $error = "Reason cannot exceed 2000 characters.";
         } else {
             $evidence_for_db = null;
 

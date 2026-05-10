@@ -1,13 +1,14 @@
 <?php
 require_once "../Includes/auth.php";
 require_once "../Includes/db.php";
+require_once "../Includes/account.php";
 
 $user_id = $_SESSION['user_id'];
 
 $error = null;
 $success = null;
 
-$stmt = $conn->prepare("SELECT id, name, surname, email, phonenr, role, is_verified, created_at FROM users WHERE id = ?");
+$stmt = $conn->prepare("SELECT id, name, surname, email, phonenr, role, is_verified, created_at, delete_requested_at FROM users WHERE id = ?");
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $user = $stmt->get_result()->fetch_assoc();
@@ -76,6 +77,20 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 $success = "Password updated.";
             }
         }
+    } elseif ($action === 'request_delete') {
+        $stmt = $conn->prepare("UPDATE users SET delete_requested_at = NOW() WHERE id = ? AND delete_requested_at IS NULL");
+        $stmt->bind_param("i", $user_id);
+        $stmt->execute();
+        $stmt->close();
+        $user['delete_requested_at'] = date('Y-m-d H:i:s');
+        $success = "Account deletion scheduled. You have " . ACCOUNT_DELETE_GRACE_DAYS . " days to cancel.";
+    } elseif ($action === 'cancel_delete') {
+        $stmt = $conn->prepare("UPDATE users SET delete_requested_at = NULL WHERE id = ?");
+        $stmt->bind_param("i", $user_id);
+        $stmt->execute();
+        $stmt->close();
+        $user['delete_requested_at'] = null;
+        $success = "Account deletion cancelled.";
     }
 }
 
@@ -178,6 +193,37 @@ require_once "../Includes/header.php";
 
         <button type="submit" class="btn btn-primary">Change Password</button>
     </form>
+
+    <h2 style="margin-top:2rem; color:#a00;">Delete Account</h2>
+    <?php if (!empty($user['delete_requested_at'])):
+        $expires_at = account_grace_expires_at($user['delete_requested_at']);
+        $days_left  = max(0, (int)ceil(($expires_at - time()) / 86400));
+    ?>
+        <div class="alert alert-warning">
+            <strong>Your account is scheduled for deletion on <?php echo date('Y-m-d H:i', $expires_at); ?></strong>
+            (<?php echo $days_left; ?> day<?php echo $days_left === 1 ? '' : 's'; ?> remaining).
+            On that date, your account will be permanently removed if you have no active orders and a zero wallet balance. Until then, you can cancel below.
+        </div>
+        <form method="post">
+            <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
+            <input type="hidden" name="action" value="cancel_delete">
+            <button type="submit" class="btn btn-secondary">Cancel deletion</button>
+        </form>
+    <?php else: ?>
+        <p>
+            <small>
+                Requesting deletion queues your account for removal in <?php echo ACCOUNT_DELETE_GRACE_DAYS; ?> days.
+                You can cancel any time during that window.
+                Before deletion runs, make sure your wallet balance is zero and no orders are in progress &mdash;
+                otherwise the deletion is blocked and stays scheduled.
+            </small>
+        </p>
+        <form method="post" onsubmit="return confirm('Schedule account deletion in <?php echo ACCOUNT_DELETE_GRACE_DAYS; ?> days? You can cancel anytime before then.');">
+            <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
+            <input type="hidden" name="action" value="request_delete">
+            <button type="submit" class="btn btn-danger">Request account deletion</button>
+        </form>
+    <?php endif; ?>
 </div>
 
 <?php include "../Includes/footer.php"; ?>

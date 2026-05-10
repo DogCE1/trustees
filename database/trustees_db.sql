@@ -156,7 +156,8 @@ CREATE TABLE `users` (
   `phonenr` varchar(20) DEFAULT NULL,
   `role` enum('buyer','seller','admin') DEFAULT 'buyer',
   `is_verified` tinyint(4) DEFAULT 0,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `delete_requested_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------

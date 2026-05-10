@@ -225,7 +225,7 @@ require_once "../Includes/header.php";
                         <td><textarea form="<?php echo $fid; ?>" name="reason" rows="3" cols="30"><?php echo htmlspecialchars($d['reason'] ?? ''); ?></textarea></td>
                         <td>
                             <?php if (!empty($d['evidence'])): ?>
-                                <a href="../<?php echo htmlspecialchars($d['evidence']); ?>" target="_blank">View</a>
+                                <a href="../<?php echo htmlspecialchars($d['evidence']); ?>" target="_blank"><u>View</u></a>
                             <?php else: ?>
                                 —
                             <?php endif; ?>

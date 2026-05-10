@@ -231,16 +231,16 @@ function video_mime_for($path) {
                     <?php if (!empty($v['id_document'])): ?>
                         <div>
                             <p style="margin:0 0 .25rem;"><strong>ID document</strong></p>
-                            <a href="../<?php echo htmlspecialchars($v['id_document']); ?>" target="_blank">
-                                <img src="../<?php echo htmlspecialchars($v['id_document']); ?>" alt="ID document" style="max-width:220px; max-height:160px; object-fit:cover; border:1px solid #ccc; border-radius:4px;">
+                            <a href="../Verification/file.php?vid=<?php echo (int)$v['id']; ?>&amp;field=id_document" target="_blank">
+                                <img src="../Verification/file.php?vid=<?php echo (int)$v['id']; ?>&amp;field=id_document" alt="ID document" style="max-width:220px; max-height:160px; object-fit:cover; border:1px solid #ccc; border-radius:4px;">
                             </a>
                         </div>
                     <?php endif; ?>
                     <?php if (!empty($v['selfie_photo'])): ?>
                         <div>
                             <p style="margin:0 0 .25rem;"><strong>Selfie with ID</strong></p>
-                            <a href="../<?php echo htmlspecialchars($v['selfie_photo']); ?>" target="_blank">
-                                <img src="../<?php echo htmlspecialchars($v['selfie_photo']); ?>" alt="Selfie" style="max-width:220px; max-height:160px; object-fit:cover; border:1px solid #ccc; border-radius:4px;">
+                            <a href="../Verification/file.php?vid=<?php echo (int)$v['id']; ?>&amp;field=selfie_photo" target="_blank">
+                                <img src="../Verification/file.php?vid=<?php echo (int)$v['id']; ?>&amp;field=selfie_photo" alt="Selfie" style="max-width:220px; max-height:160px; object-fit:cover; border:1px solid #ccc; border-radius:4px;">
                             </a>
                         </div>
                     <?php endif; ?>
@@ -248,7 +248,7 @@ function video_mime_for($path) {
                         <div>
                             <p style="margin:0 0 .25rem;"><strong>Verification video</strong></p>
                             <video controls style="max-width:260px; max-height:200px; border:1px solid #ccc; border-radius:4px;">
-                                <source src="../<?php echo htmlspecialchars($v['verification_video']); ?>" type="<?php echo htmlspecialchars(video_mime_for($v['verification_video'])); ?>">
+                                <source src="../Verification/file.php?vid=<?php echo (int)$v['id']; ?>&amp;field=verification_video" type="<?php echo htmlspecialchars(video_mime_for($v['verification_video'])); ?>">
                                 Your browser does not support the video tag.
                             </video>
                         </div>

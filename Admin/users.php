@@ -76,14 +76,25 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 $search = trim($_GET['q'] ?? '');
 
 if ($search !== '') {
-    $stmt = $conn->prepare("SELECT * FROM users WHERE name LIKE ? OR surname LIKE ? OR email LIKE ? OR phonenr LIKE ? ORDER BY id ASC");
+    $stmt = $conn->prepare("
+        SELECT u.*, COALESCE(w.balance, 0.00) AS wallet_balance
+        FROM users u
+        LEFT JOIN wallet w ON w.user_id = u.id
+        WHERE u.name LIKE ? OR u.surname LIKE ? OR u.email LIKE ? OR u.phonenr LIKE ?
+        ORDER BY u.id ASC
+    ");
     $like = '%' . $search . '%';
     $stmt->bind_param("ssss", $like, $like, $like, $like);
     $stmt->execute();
     $users = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     $stmt->close();
 } else {
-    $result = $conn->query("SELECT * FROM users ORDER BY id ASC");
+    $result = $conn->query("
+        SELECT u.*, COALESCE(w.balance, 0.00) AS wallet_balance
+        FROM users u
+        LEFT JOIN wallet w ON w.user_id = u.id
+        ORDER BY u.id ASC
+    ");
     $users = [];
     if ($result && $result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
@@ -128,6 +139,7 @@ require_once "../Includes/header.php";
                 <th>Phone</th>
                 <th>Role</th>
                 <th>Verified</th>
+                <th>Wallet</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -149,6 +161,10 @@ require_once "../Includes/header.php";
                     </td>
                     <td>
                         <input form="<?php echo $fid; ?>" type="checkbox" name="is_verified" value="1" <?php if ($user['is_verified']) echo 'checked'; ?>>
+                    </td>
+                    <?php $balance = (float)($user['wallet_balance'] ?? 0); ?>
+                    <td<?php if ($balance > 0) echo ' style="background-color:#d4edda; color:#155724; font-weight:bold;"'; ?>>
+                        R<?php echo number_format($balance, 2); ?>
                     </td>
                     <td>
                         <button form="<?php echo $fid; ?>" type="submit" name="action" value="update" class="btn btn-primary">Save</button>
