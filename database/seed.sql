@@ -109,11 +109,11 @@ INSERT INTO `verifications` (`id`, `user_id`, `id_document`, `selfie_photo`, `ve
 (6, 10, 'Uploads/verification/refilwe_id.jpg', 'Uploads/verification/refilwe_selfie.jpg', 'Uploads/verification/refilwe_video.mp4', 'Refilwe Molefe', '0101015732081', '88 Oak Street, Alberton', 'rejected', 'ID photo is blurry. Please retake in good lighting.', '2026-04-24 08:30:00', '2026-04-24 09:15:00', 1);
 
 INSERT INTO `notifications` (`id`, `user_id`, `message`, `link`, `is_read`, `created_at`) VALUES
-(1, 2, 'Your listing "Samsung Galaxy A14" has been verified.', '/ITECA-Website/Listings/my_listings.php', 1, '2026-04-20 12:05:00'),
-(2, 3, 'Your order #1 is ready for meetup collection.', '/ITECA-Website/Orders/my_orders.php', 0, '2026-04-21 11:00:00'),
-(3, 5, 'Please upload delivery proof for order #2.', '/ITECA-Website/Orders/upload_proof.php?order_id=2', 0, '2026-04-22 10:00:00'),
-(4, 8, 'Payment for order #5 has been released to your wallet.', '/ITECA-Website/Profile/wallet.php', 0, '2026-04-22 14:05:00'),
-(5, 9, 'Dispute opened for order #4. Admin review has started.', '/ITECA-Website/Orders/dispute.php?order_id=4', 0, '2026-04-23 15:00:00');
+(1, 2, 'Your listing "Samsung Galaxy A14" has been verified.', 'Listings/my_listings.php', 1, '2026-04-20 12:05:00'),
+(2, 3, 'Your order #1 is ready for meetup collection.', 'Orders/my_orders.php', 0, '2026-04-21 11:00:00'),
+(3, 5, 'Please upload delivery proof for order #2.', 'Orders/upload_proof.php?order_id=2', 0, '2026-04-22 10:00:00'),
+(4, 8, 'Payment for order #5 has been released to your wallet.', 'Profile/wallet.php', 0, '2026-04-22 14:05:00'),
+(5, 9, 'Dispute opened for order #4. Admin review has started.', 'Orders/dispute.php?order_id=4', 0, '2026-04-23 15:00:00');
 
 INSERT INTO `messages` (`id`, `sender_id`, `recipient_id`, `listing_id`, `body`, `is_read`, `created_at`) VALUES
 (1, 3, 2, 2, 'Hi, is the Nike Air Max still available for meetup this afternoon?', 1, '2026-04-20 13:00:00'),

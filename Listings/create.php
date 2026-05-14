@@ -3,7 +3,7 @@ require_once "../Includes/auth.php";
 require_once "../Includes/db.php";
 
 if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
-    header("Location: /ITECA-Website/Admin/dashboard.php");
+    header("Location: " . BASE_URL . "/Admin/dashboard.php");
     exit();
 }
 
@@ -125,7 +125,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         if ($create_error && !empty($saved_paths)) {
             foreach ($saved_paths as $p) {
-                @unlink($_SERVER['DOCUMENT_ROOT'] . '/ITECA-Website/' . $p);
+                @unlink($_SERVER['DOCUMENT_ROOT'] . BASE_URL . '/' . $p);
             }
             $saved_paths = [];
         }
@@ -161,7 +161,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         } catch (Exception $e) {
             $conn->rollback();
             foreach ($saved_paths as $p) {
-                @unlink($_SERVER['DOCUMENT_ROOT'] . '/ITECA-Website/' . $p);
+                @unlink($_SERVER['DOCUMENT_ROOT'] . BASE_URL . '/' . $p);
             }
             $create_error = "Error creating listing.";
         }
@@ -179,11 +179,12 @@ require_once "../Includes/header.php";
         <?php endif; ?>
 
         <form action="create.php" method="post" enctype="multipart/form-data">
+            <ul style="list-style-type: none; padding: 0; margin: 0;">
             <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
-            <input type="text" name="Title" placeholder="Title" required>
-            <textarea name="Description" placeholder="Description" required></textarea>
-            <input type="number" name="Price" placeholder="Price" required>
-            <select name="Category" required>
+            <li><input type="text" name="Title" placeholder="Title" required></li>
+            <li><textarea name="Description" placeholder="Description" required></textarea></li>
+            <li><input type="number" name="Price" placeholder="Price" required></li>
+            <li><select name="Category" required>
                 <option value="" disabled selected>Select Category</option>
                 <option value="Electronics">Electronics</option>
                 <option value="Furniture">Furniture</option>
@@ -192,7 +193,8 @@ require_once "../Includes/header.php";
                 <option value="Sports">Sports</option>
                 <option value="Other">Other</option>
             </select>
-            <select name="Condition" required>
+            
+            <li><select name="Condition" required>
                 <option value="" disabled selected>Select Condition</option>
                 <option value="new">New</option>
                 <option value="like_new">Like New</option>
@@ -201,10 +203,14 @@ require_once "../Includes/header.php";
                 <option value="poor">Poor</option>
                 <option value="refurbished">Refurbished</option>
             </select>
+            </li>
 
-            <label for="images">Photos (1&ndash;5; first is the cover):</label>
-            <input type="file" name="images[]" id="images" accept="image/*" multiple required>
-
+            <li>
+                 <input type="file" name="images[]" id="images" accept="image/*" multiple required>
+                <label for="images">Photos (1&ndash;5; first is the cover):</label>
+               
+            </li>
+            </ul>
             <button type="submit">Create Listing</button>
         </form>
     </div>

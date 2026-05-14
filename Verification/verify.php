@@ -40,7 +40,7 @@ function save_uploaded_file($field, $allowed_mimes, $target_subdir) {
         return [null, "{$field} extension does not match its content."];
     }
 
-    $target_dir = $_SERVER['DOCUMENT_ROOT'] . "/ITECA-Website/Uploads/" . $target_subdir . "/";
+    $target_dir = $_SERVER['DOCUMENT_ROOT'] . BASE_URL . "/Uploads/" . $target_subdir . "/";
     if (!is_dir($target_dir) && !mkdir($target_dir, 0755, true)) {
         return [null, "Server cannot write to {$target_subdir} folder."];
     }

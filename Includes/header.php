@@ -45,23 +45,23 @@ function nav_active($script_names, $current) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <!-- custom css file link  -->
-    <link rel="stylesheet" href="/ITECA-Website/CSS/style.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/CSS/style.css">
 </head>
 <body>
     <!-- header section start -->
     <header class="header">
         <div id="menu-bar" class="fas fa-bars"></div>
         <?php $is_admin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin'; ?>
-        <a href="<?= $is_admin ? '/ITECA-Website/Admin/dashboard.php' : '/ITECA-Website/index.php' ?>" class="logo">Trustees</a>
+        <a href="<?= $is_admin ? BASE_URL . '/Admin/dashboard.php' : BASE_URL . '/index.php' ?>" class="logo">Trustees</a>
         <?php if ($is_admin): ?>
             <nav class="navbar">
                 <ul>
-                    <li><a<?= nav_active('dashboard.php', $current) ?> href="/ITECA-Website/Admin/dashboard.php">Dashboard</a></li>
-                    <li><a<?= nav_active('disputes.php', $current) ?> href="/ITECA-Website/Admin/disputes.php">Disputes</a></li>
-                    <li><a<?= nav_active(['listings.php','verify_listings.php'], $current) ?> href="/ITECA-Website/Admin/listings.php">Listings</a></li>
-                    <li><a<?= nav_active('orders.php', $current) ?> href="/ITECA-Website/Admin/orders.php">Orders</a></li>
-                    <li><a<?= nav_active('users.php', $current) ?> href="/ITECA-Website/Admin/users.php">Users</a></li>
-                    <li><a<?= nav_active('verifications.php', $current) ?> href="/ITECA-Website/Admin/verifications.php">Verifications</a></li>
+                    <li><a<?= nav_active('dashboard.php', $current) ?> href="<?= BASE_URL ?>/Admin/dashboard.php">Dashboard</a></li>
+                    <li><a<?= nav_active('disputes.php', $current) ?> href="<?= BASE_URL ?>/Admin/disputes.php">Disputes</a></li>
+                    <li><a<?= nav_active(['listings.php','verify_listings.php'], $current) ?> href="<?= BASE_URL ?>/Admin/listings.php">Listings</a></li>
+                    <li><a<?= nav_active('orders.php', $current) ?> href="<?= BASE_URL ?>/Admin/orders.php">Orders</a></li>
+                    <li><a<?= nav_active('users.php', $current) ?> href="<?= BASE_URL ?>/Admin/users.php">Users</a></li>
+                    <li><a<?= nav_active('verifications.php', $current) ?> href="<?= BASE_URL ?>/Admin/verifications.php">Verifications</a></li>
                 </ul>
             </nav>
             <div style="flex:1"></div>
@@ -73,9 +73,9 @@ function nav_active($script_names, $current) {
                         <i class="fas fa-caret-down"></i>
                     </button>
                     <div id="profile-menu" class="profile-menu" hidden>
-                        <a href="/ITECA-Website/Profile/profile.php"><i class="fas fa-id-card"></i> Profile</a>
-                        <a href="/ITECA-Website/Admin/dashboard.php"><i class="fas fa-gauge"></i> Dashboard</a>
-                        <a href="/ITECA-Website/logout.php" class="profile-menu-danger"><i class="fas fa-right-from-bracket"></i> Logout</a>
+                        <a href="<?= BASE_URL ?>/Profile/profile.php"><i class="fas fa-id-card"></i> Profile</a>
+                        <a href="<?= BASE_URL ?>/Admin/dashboard.php"><i class="fas fa-gauge"></i> Dashboard</a>
+                        <a href="<?= BASE_URL ?>/logout.php" class="profile-menu-danger"><i class="fas fa-right-from-bracket"></i> Logout</a>
                     </div>
                 </div>
             </div>
@@ -83,18 +83,18 @@ function nav_active($script_names, $current) {
         <?php elseif (isset($_SESSION['user_id'])): ?>
             <nav class="navbar">
                 <ul>
-                    <li><a<?= nav_active('browse.php', $current) ?> href="/ITECA-Website/Listings/browse.php">Browse</a></li>
-                    <li><a<?= nav_active('create.php', $current) ?> href="/ITECA-Website/Listings/create.php">Sell</a></li>
-                    <li><a<?= nav_active('conversation.php', $current) ?> href="/ITECA-Website/Messages/conversation.php">Messages</a></li>
-                    <li><a<?= nav_active('verify.php', $current) ?> href="/ITECA-Website/Verification/verify.php">Verify</a></li>
+                    <li><a<?= nav_active('browse.php', $current) ?> href="<?= BASE_URL ?>/Listings/browse.php">Browse</a></li>
+                    <li><a<?= nav_active('create.php', $current) ?> href="<?= BASE_URL ?>/Listings/create.php">Sell</a></li>
+                    <li><a<?= nav_active('conversation.php', $current) ?> href="<?= BASE_URL ?>/Messages/conversation.php">Messages</a></li>
+                    <li><a<?= nav_active('verify.php', $current) ?> href="<?= BASE_URL ?>/Verification/verify.php">Verify</a></li>
                 </ul>
             </nav>
-            <form class="header-search" action="/ITECA-Website/Listings/browse.php" method="get" role="search">
+            <form class="header-search" action="<?= BASE_URL ?>/Listings/browse.php" method="get" role="search">
                 <i class="fas fa-search header-search-icon"></i>
                 <input type="search" name="q" placeholder="Search listings…" value="<?= htmlspecialchars($_GET['q'] ?? '') ?>">
             </form>
             <div class="header-actions">
-                <a href="/ITECA-Website/Notifications/inbox.php" class="header-bell" aria-label="Notifications">
+                <a href="<?= BASE_URL ?>/Notifications/inbox.php" class="header-bell" aria-label="Notifications">
                     <i class="fas fa-bell"></i>
                     <?php if ($unread_notifications > 0): ?>
                         <span class="bell-badge"><?= (int)$unread_notifications ?></span>
@@ -107,14 +107,14 @@ function nav_active($script_names, $current) {
                         <i class="fas fa-caret-down"></i>
                     </button>
                     <div id="profile-menu" class="profile-menu" hidden>
-                        <a href="/ITECA-Website/Profile/profile.php"><i class="fas fa-id-card"></i> Profile</a>
-                        <a href="/ITECA-Website/Listings/my_listings.php"><i class="fas fa-tags"></i> My listings</a>
-                        <a href="/ITECA-Website/Orders/my_orders.php"><i class="fas fa-bag-shopping"></i> My orders</a>
-                        <a href="/ITECA-Website/Orders/my_sales.php"><i class="fas fa-receipt"></i> My sales</a>
-                        <a href="/ITECA-Website/Profile/wallet.php"><i class="fas fa-wallet"></i> Wallet</a>
-                        <a href="/ITECA-Website/Messages/inbox.php"><i class="fas fa-envelope"></i> Messages</a>
-                        <a href="/ITECA-Website/Verification/verify.php"><i class="fas fa-shield-halved"></i> Verify</a>
-                        <a href="/ITECA-Website/logout.php" class="profile-menu-danger"><i class="fas fa-right-from-bracket"></i> Logout</a>
+                        <a href="<?= BASE_URL ?>/Profile/profile.php"><i class="fas fa-id-card"></i> Profile</a>
+                        <a href="<?= BASE_URL ?>/Listings/my_listings.php"><i class="fas fa-tags"></i> My listings</a>
+                        <a href="<?= BASE_URL ?>/Orders/my_orders.php"><i class="fas fa-bag-shopping"></i> My orders</a>
+                        <a href="<?= BASE_URL ?>/Orders/my_sales.php"><i class="fas fa-receipt"></i> My sales</a>
+                        <a href="<?= BASE_URL ?>/Profile/wallet.php"><i class="fas fa-wallet"></i> Wallet</a>
+                        <a href="<?= BASE_URL ?>/Messages/inbox.php"><i class="fas fa-envelope"></i> Messages</a>
+                        <a href="<?= BASE_URL ?>/Verification/verify.php"><i class="fas fa-shield-halved"></i> Verify</a>
+                        <a href="<?= BASE_URL ?>/logout.php" class="profile-menu-danger"><i class="fas fa-right-from-bracket"></i> Logout</a>
                     </div>
                 </div>
             </div>
@@ -122,16 +122,16 @@ function nav_active($script_names, $current) {
         <?php else: ?>
             <nav class="navbar">
                 <ul>
-                    <li><a<?= nav_active('browse.php', $current) ?> href="/ITECA-Website/Listings/browse.php">Browse</a></li>
+                    <li><a<?= nav_active('browse.php', $current) ?> href="<?= BASE_URL ?>/Listings/browse.php">Browse</a></li>
                 </ul>
             </nav>
-            <form class="header-search" action="/ITECA-Website/Listings/browse.php" method="get" role="search">
+            <form class="header-search" action="<?= BASE_URL ?>/Listings/browse.php" method="get" role="search">
                 <i class="fas fa-search header-search-icon"></i>
                 <input type="search" name="q" placeholder="Search listings…" value="<?= htmlspecialchars($_GET['q'] ?? '') ?>">
             </form>
             <div class="profile">
-                <a href="/ITECA-Website/login.php" class="btn btn-secondary">Login</a>
-                <a href="/ITECA-Website/register.php" class="btn btn-primary">Register</a>
+                <a href="<?= BASE_URL ?>/login.php" class="btn btn-secondary">Login</a>
+                <a href="<?= BASE_URL ?>/register.php" class="btn btn-primary">Register</a>
             </div>
         <?php endif; ?>
 
@@ -140,4 +140,3 @@ function nav_active($script_names, $current) {
     <?php if ($flash_error = get_flash('error')): ?>
         <div class="flash flash-error"><?php echo htmlspecialchars($flash_error); ?></div>
     <?php endif; ?>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

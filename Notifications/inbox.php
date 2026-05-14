@@ -6,7 +6,7 @@ require_once __DIR__ . '/../Includes/notifications.php';
 $user_id = (int)$_SESSION['user_id'];
 
 // Normalize a notification link so it works regardless of whether the value
-// stored in the DB is absolute ("/ITECA-Website/...") or relative ("Orders/...").
+// stored in the DB is absolute (BASE_URL . "/...") or relative ("Orders/...").
 function normalize_notif_link(?string $link): ?string {
     if ($link === null || $link === '') {
         return null;
@@ -17,7 +17,7 @@ function normalize_notif_link(?string $link): ?string {
     if (str_starts_with($link, '/')) {
         return $link;
     }
-    return '/ITECA-Website/' . ltrim($link, '/');
+    return BASE_URL . '/' . ltrim($link, '/');
 }
 
 // "Mark all as read"
