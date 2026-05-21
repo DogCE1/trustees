@@ -63,7 +63,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $stmt->close();
 
             $sender_name = $_SESSION['user_name'] ?? 'Someone';
-            $notif_link  = "/ITECA-Website/Messages/conversation.php?with=$me" . ($listing ? "&listing=$listing" : "");
+            $notif_link  = BASE_URL . "/Messages/conversation.php?with=$me" . ($listing ? "&listing=$listing" : "");
             notify($conn, $with, "New message from " . $sender_name, $notif_link);
 
             header("Location: conversation.php?with=$with" . ($listing ? "&listing=$listing" : ""));
