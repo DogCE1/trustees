@@ -144,4 +144,3 @@ function nav_active($script_names, $current) {
     <?php if ($flash_error = get_flash('error')): ?>
         <div class="flash flash-error"><?php echo htmlspecialchars($flash_error); ?></div>
     <?php endif; ?>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

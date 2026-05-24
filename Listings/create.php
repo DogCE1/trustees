@@ -3,7 +3,7 @@ require_once "../Includes/auth.php";
 require_once "../Includes/db.php";
 
 if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
-    header("Location: /ITECA-Website/Admin/dashboard.php");
+    header("Location: " . BASE_URL . "/Admin/dashboard.php");
     exit();
 }
 
@@ -125,7 +125,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         if ($create_error && !empty($saved_paths)) {
             foreach ($saved_paths as $p) {
-                @unlink($_SERVER['DOCUMENT_ROOT'] . '/ITECA-Website/' . $p);
+                @unlink($_SERVER['DOCUMENT_ROOT'] . BASE_URL . '/' . $p);
             }
             $saved_paths = [];
         }
@@ -161,7 +161,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         } catch (Exception $e) {
             $conn->rollback();
             foreach ($saved_paths as $p) {
-                @unlink($_SERVER['DOCUMENT_ROOT'] . '/ITECA-Website/' . $p);
+                @unlink($_SERVER['DOCUMENT_ROOT'] . BASE_URL . '/' . $p);
             }
             $create_error = "Error creating listing.";
         }
@@ -179,6 +179,7 @@ require_once "../Includes/header.php";
         <?php endif; ?>
 
         <form action="create.php" method="post" enctype="multipart/form-data">
+            <ul style="list-style-type: none; padding: 0; margin: 0;">
             <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
             <ul style="list-style-type: none; margin: 0; padding: 0;">
               

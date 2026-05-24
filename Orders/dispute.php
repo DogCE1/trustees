@@ -89,7 +89,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     if (!$image) {
                         $error = "Failed to process evidence image.";
                     } else {
-                        $target_dir = $_SERVER['DOCUMENT_ROOT'] . "/ITECA-Website/Uploads/disputes/";
+                        $target_dir = $_SERVER['DOCUMENT_ROOT'] . BASE_URL . "/Uploads/disputes/";
                         if (!is_dir($target_dir)) {
                             mkdir($target_dir, 0755, true);
                         }

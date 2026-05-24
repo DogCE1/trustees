@@ -65,7 +65,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     // Helper: delete an image file from disk (best-effort).
     $unlink_image = function($web_path) {
         if (!$web_path) return;
-        @unlink($_SERVER['DOCUMENT_ROOT'] . '/ITECA-Website/' . $web_path);
+        @unlink($_SERVER['DOCUMENT_ROOT'] . BASE_URL . '/' . $web_path);
     };
 
     if ($action === 'delete') {

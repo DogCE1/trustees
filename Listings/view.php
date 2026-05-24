@@ -90,8 +90,8 @@ require_once "../Includes/header.php";
                         Contact Seller
                     </a></p>
                 <?php else: ?>
-                    <p><a class="btn btn-primary" href="/ITECA-Website/login.php">Log in to buy</a></p>
-                    <p><a class="btn btn-primary" href="/ITECA-Website/login.php">Log in to contact seller</a></p>
+                    <p><a class="btn btn-primary" href="<?= BASE_URL ?>/login.php">Log in to buy</a></p>
+                    <p><a class="btn btn-primary" href="<?= BASE_URL ?>/login.php">Log in to contact seller</a></p>
                 <?php endif; ?>
             <?php endif; ?>
         </div>
