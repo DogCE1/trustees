@@ -5,6 +5,7 @@ if (isset($_SESSION['user_id'])) {
     $user_id = '';
 }
 
+// Get unread notifications count for header display (only if user is logged in and $conn is available)
 $unread_notifications = 0;
 if (!empty($user_id) && isset($conn) && $conn instanceof mysqli) {
     if (!function_exists('count_unread_notifications')) {
@@ -19,15 +20,18 @@ if (!empty($user_id) && isset($conn) && $conn instanceof mysqli) {
 <?php
 $user_name = $_SESSION['user_name'] ?? '';
 $user_initials = '';
+// Generate user initials for avatar display (only if user_name is not empty)
 if ($user_name !== '') {
     $parts = preg_split('/\s+/', trim($user_name));
     $user_initials = strtoupper(mb_substr($parts[0], 0, 1));
+    // If there's a second part of the name, use its first letter as well; otherwise, if the first part is longer than 1 character, use its second letter as the second initial
     if (!empty($parts[1])) {
         $user_initials .= strtoupper(mb_substr($parts[1], 0, 1));
     } elseif (mb_strlen($parts[0]) > 1) {
         $user_initials .= strtoupper(mb_substr($parts[0], 1, 1));
     }
 }
+// Determine the current script name for active nav link highlighting (basename of the script without query parameters)
 $current = basename($_SERVER['SCRIPT_NAME'] ?? '');
 function nav_active($script_names, $current) {
     return in_array($current, (array)$script_names, true) ? ' class="is-active"' : '';

@@ -133,7 +133,7 @@ require_once "../Includes/header.php";
 
 <div class="container">
     <h1>My Wallet</h1>
-
+    <p><a href="<?php echo BASE_URL; ?>/Listings/browse.php">&larr; Back to browse</a></p>
     <?php if ($error): ?>
         <div class="alert alert-danger"><?php echo htmlspecialchars($error); ?></div>
     <?php endif; ?>

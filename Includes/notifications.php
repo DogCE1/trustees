@@ -25,13 +25,13 @@ function count_unread_notifications(mysqli $conn, int $user_id): int {
 
 // Convenience helpers used by Tier 1 flow hooks.
 function notify_seller_of_order(mysqli $conn, int $seller_id, int $order_id, string $listing_title): void {
-    notify($conn, $seller_id, "New order #$order_id: \"$listing_title\"", "Orders/my_sales.php");
+    notify($conn, $seller_id, "New order #$order_id: \"$listing_title\"", BASE_URL . "/Orders/my_sales.php");
 }
 
 function notify_buyer_order_status(mysqli $conn, int $buyer_id, int $order_id, string $message): void {
-    notify($conn, $buyer_id, "Order #$order_id: $message", "Orders/my_orders.php");
+    notify($conn, $buyer_id, "Order #$order_id: $message", BASE_URL . "/Orders/my_orders.php");
 }
 
 function notify_seller_order_status(mysqli $conn, int $seller_id, int $order_id, string $message): void {
-    notify($conn, $seller_id, "Order #$order_id: $message", "Orders/my_sales.php");
+    notify($conn, $seller_id, "Order #$order_id: $message", BASE_URL . "/Orders/my_sales.php");
 }

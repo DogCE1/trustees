@@ -265,6 +265,7 @@ CREATE TABLE `wallet_transactions` (
 --
 -- Table structure for table `rate limits`
 --
+DROP TABLE IF EXISTS `rate_events`;
 CREATE TABLE `rate_events` (
   `id` INT(11) NOT NULL AUTO_INCREMENT,
   `action` VARCHAR(50) NOT NULL,
@@ -299,11 +300,6 @@ ALTER TABLE `orders`
   ADD KEY `buyer_id` (`buyer_id`),
   ADD KEY `listing_id` (`listing_id`),
   ADD KEY `meetup_store_id` (`meetup_store_id`);
-
---
--- Indexes for table `stores`
---
--- stores primary key defined inline
 
 --
 -- Indexes for table `notifications`

@@ -163,7 +163,7 @@ require_once "../Includes/header.php";
 
 <div class="container">
     <h1>Seller Verification</h1>
-
+     <p><a href="<?php echo BASE_URL; ?>/Listings/browse.php">&larr; Back to browse</a></p>
     <?php if ((int)($user['is_verified'] ?? 0) === 1): ?>
         <div class="alert alert-success">
             Your account is already verified. You can list items for sale.

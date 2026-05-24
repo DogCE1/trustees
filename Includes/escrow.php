@@ -53,7 +53,7 @@ function release_escrow_to_seller(mysqli $conn, int $order_id): void {
 
 function refund_escrow_to_buyer(mysqli $conn, int $order_id): void {
     $stmt = $conn->prepare("
-        SELECT total_price, buyer_id
+        SELECT total_price, buyer_id, listing_id
         FROM orders
         WHERE id = ?
         FOR UPDATE
@@ -66,8 +66,9 @@ function refund_escrow_to_buyer(mysqli $conn, int $order_id): void {
     if (!$row) {
         throw new Exception("Order not found.");
     }
-    $buyer_id = (int)$row['buyer_id'];
-    $amount   = (float)$row['total_price'];
+    $buyer_id   = (int)$row['buyer_id'];
+    $amount     = (float)$row['total_price'];
+    $listing_id = (int)($row['listing_id'] ?? 0);
 
     if ($buyer_id <= 0) {
         throw new Exception("Buyer account no longer exists; cannot refund.");
@@ -96,6 +97,28 @@ function refund_escrow_to_buyer(mysqli $conn, int $order_id): void {
     $stmt->bind_param("iidd", $buyer_id, $order_id, $amount, $balance_after);
     $stmt->execute();
     $stmt->close();
+
+    // If no in-flight orders remain for this listing, free it back to 'verified'.
+    // Terminal orders (delivered/cancelled/refunded) are history and don't block —
+    // a delivered order means the listing was once sold but if it's been re-listed
+    // (admin or manual revert) and the new order refunds, the listing should reopen.
+    if ($listing_id > 0) {
+        $stmt = $conn->prepare("
+            SELECT COUNT(*) AS c FROM orders
+            WHERE listing_id = ? AND status NOT IN ('delivered', 'cancelled', 'refunded')
+        ");
+        $stmt->bind_param("i", $listing_id);
+        $stmt->execute();
+        $in_flight = (int)$stmt->get_result()->fetch_assoc()['c'];
+        $stmt->close();
+
+        if ($in_flight === 0) {
+            $stmt = $conn->prepare("UPDATE listings SET status = 'verified' WHERE id = ? AND status = 'sold'");
+            $stmt->bind_param("i", $listing_id);
+            $stmt->execute();
+            $stmt->close();
+        }
+    }
 }
 
 function order_status_label(string $status): string {

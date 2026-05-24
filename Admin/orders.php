@@ -80,7 +80,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         }
 
     } elseif ($action === 'delete' && $order_id > 0) {
-        $stmt = $conn->prepare("SELECT status FROM orders WHERE id = ?");
+        $stmt = $conn->prepare("SELECT status, listing_id FROM orders WHERE id = ?");
         $stmt->bind_param("i", $order_id);
         $stmt->execute();
         $row = $stmt->get_result()->fetch_assoc();
@@ -91,10 +91,35 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         } elseif (!order_is_terminal($row['status'])) {
             set_flash('error', "Cannot delete an order that still holds escrow. Resolve, refund, or cancel it first.");
         } else {
-            $stmt = $conn->prepare("DELETE FROM orders WHERE id = ?");
-            $stmt->bind_param("i", $order_id);
-            $stmt->execute();
-            $stmt->close();
+            $linked_listing_id = (int)($row['listing_id'] ?? 0);
+            $conn->begin_transaction();
+            try {
+                $stmt = $conn->prepare("DELETE FROM orders WHERE id = ?");
+                $stmt->bind_param("i", $order_id);
+                $stmt->execute();
+                $stmt->close();
+
+                // If the listing has no remaining orders and is still flagged 'sold',
+                // revert it to 'verified' so the seller isn't stuck with an orphaned sold listing.
+                if ($linked_listing_id > 0) {
+                    $stmt = $conn->prepare("SELECT COUNT(*) AS c FROM orders WHERE listing_id = ?");
+                    $stmt->bind_param("i", $linked_listing_id);
+                    $stmt->execute();
+                    $remaining = (int)$stmt->get_result()->fetch_assoc()['c'];
+                    $stmt->close();
+
+                    if ($remaining === 0) {
+                        $stmt = $conn->prepare("UPDATE listings SET status = 'verified' WHERE id = ? AND status = 'sold'");
+                        $stmt->bind_param("i", $linked_listing_id);
+                        $stmt->execute();
+                        $stmt->close();
+                    }
+                }
+                $conn->commit();
+            } catch (Throwable $e) {
+                $conn->rollback();
+                set_flash('error', "Could not delete order. Please try again.");
+            }
         }
     }
 

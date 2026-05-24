@@ -54,6 +54,7 @@ require_once "../Includes/header.php";
 
 <div class="container">
     <h1>My Listings</h1>
+    <p><a href="<?php echo BASE_URL; ?>/Listings/browse.php">&larr; Back to browse</a></p>
     <p>Every item you have posted, including those still awaiting review or rejected by an admin.</p>
 
     <?php if ($flash_success): ?>
@@ -71,7 +72,7 @@ require_once "../Includes/header.php";
                 $gallery = $gallery_by_listing[$lid] ?? [];
                 $can_edit = in_array($listing['status'], ['pending', 'rejected', 'verified'], true);
             ?>
-            <div class="listing-card" style="margin-bottom:1.5rem;">
+            <div class="listing-card" style="margin-bottom:1.5rem; padding:1rem;">
                 <h2><?php echo htmlspecialchars($listing['title']); ?></h2>
                 <p>
                     <strong>Price:</strong> R<?php echo number_format((float)$listing['price'], 2); ?>
@@ -99,7 +100,7 @@ require_once "../Includes/header.php";
                     <p><em>No photos uploaded.</em></p>
                 <?php endif; ?>
 
-                <div style="display:flex; gap:.5rem; flex-wrap:wrap;">
+                <div style="display:flex; gap:0.5rem; flex-wrap:wrap; align-items: center;">
                     <a href="view.php?id=<?php echo $lid; ?>" class="btn btn-secondary">View</a>
                     <?php if ($can_edit): ?>
                         <a href="edit.php?id=<?php echo $lid; ?>" class="btn btn-primary">Edit</a>
@@ -107,7 +108,15 @@ require_once "../Includes/header.php";
                     <?php if ($listing['status'] === 'sold' && !empty($listing['order_id'])): ?>
                         <a href="../Orders/my_sales.php?order_id=<?php echo (int)$listing['order_id']; ?>" class="btn btn-primary">View Sale #<?php echo (int)$listing['order_id']; ?></a>
                     <?php endif; ?>
+                    <?php if ($can_edit): ?>
+                        <form method="post" action="edit.php?id=<?= $lid ?>" style="margin: 0;" onsubmit="return confirm('Delete this listing? This cannot be undone.');">
+                            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
+                            <input type="hidden" name="action" value="delete">
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </form>
+                    <?php endif; ?>
                 </div>
+
             </div>
         <?php endforeach; ?>
     <?php endif; ?>

@@ -6,18 +6,16 @@ if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-// Define BASE_URL for generating absolute URLs in the application. 
-// This is calculated based on the document root and the directory of the current script, allowing for flexibility in deployment environments.
 if (!defined('BASE_URL')) {
-    define('BASE_URL', str_replace('\\', '/', substr(
-        dirname(__DIR__),
-        strlen(rtrim($_SERVER['DOCUMENT_ROOT'], '/\\'))
-    )));
+    $docRoot = isset($_SERVER['DOCUMENT_ROOT']) ? str_replace('\\', '/', realpath($_SERVER['DOCUMENT_ROOT'])) : '';
+    $appRoot = str_replace('\\', '/', realpath(dirname(__DIR__)));
+    $base = '';
+    if ($docRoot !== '' && $appRoot !== false && strpos($appRoot, $docRoot) === 0) {
+        $base = substr($appRoot, strlen($docRoot));
+    }
+    define('BASE_URL', rtrim($base, '/'));
 }
 
-// Generate a CSRF token if one doesn't already exist. This token will be used to protect against
-// Cross-Site Request Forgery attacks by ensuring that form submissions originate from the same site.
-// The token is generated using random_bytes for cryptographic security and stored in the session for later verification.
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
