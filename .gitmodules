@@ -1,0 +1,3 @@
+[submodule "trustees"]
+	path = trustees
+	url = https://github.com/DogCE1/trustees.git

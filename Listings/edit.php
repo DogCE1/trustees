@@ -68,6 +68,50 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         @unlink($_SERVER['DOCUMENT_ROOT'] . '/ITECA-Website/' . $web_path);
     };
 
+    if ($action === 'delete') {
+        // Eligibility: status must be pending/rejected/verified (sold is blocked by the
+        // gate above). Belt-and-braces: refuse if any order ever attached, since
+        // orders.listing_id is ON DELETE SET NULL and we'd orphan order history.
+        $s = $conn->prepare("SELECT COUNT(*) AS c FROM orders WHERE listing_id = ?");
+        $s->bind_param("i", $listing_id);
+        $s->execute();
+        $order_count = (int)$s->get_result()->fetch_assoc()['c'];
+        $s->close();
+
+        if ($order_count > 0) {
+            set_flash('error', "This listing has order history and cannot be deleted.");
+            header("Location: my_listings.php");
+            exit();
+        }
+
+        // Collect image paths before dropping the row. listing_images CASCADEs at the
+        // DB layer but the files on disk don't. Order: collect → delete row → unlink.
+        $paths_to_unlink = [];
+        foreach ($gallery as $g) {
+            if (!empty($g['path'])) $paths_to_unlink[] = $g['path'];
+        }
+
+        $conn->begin_transaction();
+        try {
+            $s = $conn->prepare("DELETE FROM listings WHERE id = ? AND user_id = ?");
+            $s->bind_param("ii", $listing_id, $user_id);
+            $s->execute();
+            $affected = $s->affected_rows;
+            $s->close();
+            if ($affected !== 1) {
+                throw new RuntimeException("Listing row was not deleted.");
+            }
+            $conn->commit();
+            foreach ($paths_to_unlink as $p) $unlink_image($p);
+            set_flash('success', "Listing deleted.");
+        } catch (Throwable $e) {
+            $conn->rollback();
+            set_flash('error', "Could not delete listing. Please try again.");
+        }
+        header("Location: my_listings.php");
+        exit();
+    }
+
     if ($action === 'remove_photo') {
         $photo = $_POST['photo'] ?? '';
         $matched = null;

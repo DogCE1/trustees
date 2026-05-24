@@ -41,8 +41,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['action'], $_POST['ord
                 $stmt->execute();
                 $stmt->close();
 
+                $listing_id_for_revert = (int)$order['listing_id'];
                 $stmt = $conn->prepare("UPDATE listings SET status = 'verified' WHERE id = ? AND status = 'sold'");
-                $stmt->bind_param("i", (int)$order['listing_id']);
+                $stmt->bind_param("i", $listing_id_for_revert);
                 $stmt->execute();
                 $stmt->close();
 
@@ -123,6 +124,7 @@ require_once "../Includes/header.php";
 <?php $flash_success = get_flash('success'); ?>
 <div class="container">
     <h1>My Orders</h1>
+    <p><a href="<?php echo BASE_URL; ?>/Listings/browse.php">&larr; Back to browse</a></p>
     <p>Items you have purchased. Funds are held in escrow until delivery is confirmed.</p>
 
     <?php if ($flash_success): ?>

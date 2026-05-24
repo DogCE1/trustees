@@ -50,6 +50,7 @@ require_once "../Includes/header.php";
     <?php if (empty($threads)): ?>
         <p>You have no conversations yet. Open a listing and click "Contact Seller" to start one.</p>
     <?php else: ?>
+        <p><a href="<?php echo BASE_URL; ?>/Listings/browse.php">&larr; Back to browse</a></p>
         <ul class="thread-list">
             <?php foreach ($threads as $t): ?>
                 <?php

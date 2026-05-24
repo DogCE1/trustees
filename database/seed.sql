@@ -48,13 +48,13 @@ INSERT INTO `stores` (`id`, `name`, `address`, `latitude`, `longitude`, `created
 INSERT INTO `listings` (`id`, `user_id`, `title`, `description`, `price`, `category`, `item_condition`, `image`, `status`, `rejection_reason`, `created_at`) VALUES
 (1, 2, 'Samsung Galaxy A14', 'Lightly used phone with charger and box. Battery health is excellent.', 1200.00, 'Electronics', 'good', 'Uploads/listings/phone_a14.jpg', 'verified', NULL, '2026-04-20 09:10:00'),
 (2, 2, 'Nike Air Max 90', 'Size 9 sneakers, clean and comfortable. Worn less than ten times.', 850.00, 'Clothing', 'like_new', 'Uploads/listings/nike_airmax90.jpg', 'sold', NULL, '2026-04-20 09:12:00'),
-(3, 4, 'Office Chair', 'Black ergonomic office chair with lumbar support and tilt lock.', 600.00, 'Furniture', 'good', 'Uploads/listings/office_chair.jpg', 'verified', NULL, '2026-04-20 09:15:00'),
+(3, 4, 'Office Chair', 'Black ergonomic office chair with lumbar support and tilt lock.', 600.00, 'Furniture', 'good', 'Uploads/listings/office_chair.jpg', 'sold', NULL, '2026-04-20 09:15:00'),
 (4, 4, 'IT Textbooks Bundle', 'Three second-year IT textbooks. Minor highlighting only.', 320.00, 'Books', 'good', 'Uploads/listings/it_textbooks.jpg', 'pending', NULL, '2026-04-20 09:17:00'),
-(5, 6, 'PS4 Controller', 'Original Sony controller, tested and fully working.', 450.00, 'Electronics', 'fair', 'Uploads/listings/ps4_controller.jpg', 'verified', NULL, '2026-04-20 09:20:00'),
+(5, 6, 'PS4 Controller', 'Original Sony controller, tested and fully working.', 450.00, 'Electronics', 'fair', 'Uploads/listings/ps4_controller.jpg', 'sold', NULL, '2026-04-20 09:20:00'),
 (6, 6, 'Leather Handbag', 'Brown handbag with visible stitching wear and a loose zip.', 380.00, 'Clothing', 'fair', 'Uploads/listings/leather_bag.jpg', 'rejected', 'Listing photos did not clearly show wear on zip area.', '2026-04-20 09:22:00'),
-(7, 8, 'Mountain Bike 21 Speed', 'Adult bike with strong frame. Back tire needs replacement soon.', 2500.00, 'Sports', 'fair', 'Uploads/listings/mountain_bike.jpg', 'verified', NULL, '2026-04-20 09:25:00'),
+(7, 8, 'Mountain Bike 21 Speed', 'Adult bike with strong frame. Back tire needs replacement soon.', 2500.00, 'Sports', 'fair', 'Uploads/listings/mountain_bike.jpg', 'sold', NULL, '2026-04-20 09:25:00'),
 (8, 8, 'Dell 24 inch Monitor', '1080p monitor with HDMI cable included.', 1400.00, 'Electronics', 'good', 'Uploads/listings/dell_monitor.jpg', 'pending', NULL, '2026-04-20 09:28:00'),
-(9, 2, 'Microwave Oven 20L', 'Compact microwave, fully functional, clean interior.', 750.00, 'Other', 'good', 'Uploads/listings/microwave_20l.jpg', 'verified', NULL, '2026-04-20 09:30:00'),
+(9, 2, 'Microwave Oven 20L', 'Compact microwave, fully functional, clean interior.', 750.00, 'Other', 'good', 'Uploads/listings/microwave_20l.jpg', 'sold', NULL, '2026-04-20 09:30:00'),
 (10, 4, 'Logitech Mechanical Keyboard', 'Blue switches, RGB lighting, includes detachable cable.', 950.00, 'Electronics', 'like_new', 'Uploads/listings/mech_keyboard.jpg', 'sold', NULL, '2026-04-20 09:35:00');
 
 INSERT INTO `listing_images` (`id`, `listing_id`, `image`, `sort_order`, `created_at`) VALUES

@@ -180,32 +180,35 @@ require_once "../Includes/header.php";
 
         <form action="create.php" method="post" enctype="multipart/form-data">
             <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
-            <input type="text" name="Title" placeholder="Title" required>
-            <textarea name="Description" placeholder="Description" required></textarea>
-            <input type="number" name="Price" placeholder="Price" required>
-            <select name="Category" required>
-                <option value="" disabled selected>Select Category</option>
-                <option value="Electronics">Electronics</option>
-                <option value="Furniture">Furniture</option>
-                <option value="Clothing">Clothing</option>
-                <option value="Books">Books</option>
-                <option value="Sports">Sports</option>
-                <option value="Other">Other</option>
-            </select>
-            <select name="Condition" required>
-                <option value="" disabled selected>Select Condition</option>
-                <option value="new">New</option>
-                <option value="like_new">Like New</option>
-                <option value="good">Good</option>
-                <option value="fair">Fair</option>
-                <option value="poor">Poor</option>
-                <option value="refurbished">Refurbished</option>
-            </select>
+            <ul style="list-style-type: none; margin: 0; padding: 0;">
+              
+                <li><input type="text" name="Title" placeholder="Title" required></li>
+                <li><textarea name="Description" placeholder="Description" required></textarea></li>
+                <li><input type="number" name="Price" placeholder="Price" required></li>
+                <li><select name="Category" required>
+                    <option value="" disabled selected>Select Category</option>
+                    <option value="Electronics">Electronics</option>
+                    <option value="Furniture">Furniture</option>
+                    <option value="Clothing">Clothing</option>
+                    <option value="Books">Books</option>
+                    <option value="Sports">Sports</option>
+                    <option value="Other">Other</option>
+                </select></li>
+                <li><select name="Condition" required>
+                    <option value="" disabled selected>Select Condition</option>
+                    <option value="new">New</option>
+                    <option value="like_new">Like New</option>
+                    <option value="good">Good</option>
+                    <option value="fair">Fair</option>
+                    <option value="poor">Poor</option>
+                    <option value="refurbished">Refurbished</option>
+                </select></li>
 
-            <label for="images">Photos (1&ndash;5; first is the cover):</label>
-            <input type="file" name="images[]" id="images" accept="image/*" multiple required>
+                <li><label for="images">Photos (1&ndash;5; first is the cover):</label></li>
+                <li><input type="file" name="images[]" id="images" accept="image/*" multiple required></li>
 
-            <button type="submit">Create Listing</button>
+                <li><button type="submit">Create Listing</button></li>
+             </ul>
         </form>
     </div>
 

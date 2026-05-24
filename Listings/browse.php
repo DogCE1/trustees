@@ -205,12 +205,15 @@ function format_rand($n) {
             <?php foreach ($listings as $r): ?>
                 <a class="listing-card" href="view.php?id=<?= (int)$r['id'] ?>">
                     <div class="listing-card-media">
-                        <?php if (!empty($r['image'])): ?>
-                            <img src="../<?= htmlspecialchars($r['image']) ?>" alt="">
+                     <?php if ($r['image']): ?>
+                            <img src="<?= BASE_URL ?>/uploads/<?= htmlspecialchars($r['image']) ?>">
+                        <?php elseif ($r['title'] === ''): ?>
+                            <div class="listing-card-placeholder">No image</div>
                         <?php else: ?>
                             <span class="listing-card-glyph"><?= htmlspecialchars(listing_glyph($r['title'])) ?></span>
-                        <?php endif; ?>
-                        <span class="pill pill-verified listing-card-pill">✓ Verified</span>
+                        <?php endif; ?>       
+                        <span class="pill pill-verified listing-card-pill" title="This user is a verified seller">✓ Verified</span>
+
                     </div>
                     <div class="listing-card-body">
                         <h3 class="listing-card-title"><?= htmlspecialchars($r['title']) ?></h3>

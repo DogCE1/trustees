@@ -35,7 +35,8 @@ CREATE TABLE `disputes` (
   `reason` text DEFAULT NULL,
   `evidence` varchar(255) DEFAULT NULL,
   `status` enum('open','resolved','closed') DEFAULT 'open',
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -56,7 +57,8 @@ CREATE TABLE `listings` (
   `image` varchar(255) DEFAULT NULL,
   `status` enum('pending','verified','sold','rejected') DEFAULT 'pending',
   `rejection_reason` text DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -80,7 +82,8 @@ CREATE TABLE `orders` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `quantity` int(11) DEFAULT 1,
   `unit_price_at_purchase` decimal(10,2) DEFAULT NULL,
-  `total_price` decimal(10,2) DEFAULT NULL
+  `total_price` decimal(10,2) DEFAULT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -96,7 +99,8 @@ CREATE TABLE `stores` (
   `address` varchar(255) NOT NULL,
   `latitude` decimal(10,7) NOT NULL,
   `longitude` decimal(10,7) NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 INSERT INTO `stores` (`name`, `address`, `latitude`, `longitude`) VALUES
@@ -122,7 +126,8 @@ CREATE TABLE `notifications` (
   `message` varchar(500) NOT NULL,
   `link` varchar(255) DEFAULT NULL,
   `is_read` tinyint(1) NOT NULL DEFAULT 0,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -137,7 +142,8 @@ CREATE TABLE `listing_images` (
   `listing_id` int(11) NOT NULL,
   `image` varchar(255) NOT NULL,
   `sort_order` int(11) NOT NULL DEFAULT 0,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -157,7 +163,8 @@ CREATE TABLE `users` (
   `role` enum('buyer','seller','admin') DEFAULT 'buyer',
   `is_verified` tinyint(4) DEFAULT 0,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `delete_requested_at` timestamp NULL DEFAULT NULL
+  `delete_requested_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -181,7 +188,8 @@ CREATE TABLE `verifications` (
   `rejection_reason` text DEFAULT NULL,
   `submitted_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `reviewed_at` timestamp NULL DEFAULT NULL,
-  `reviewed_by` int(11) DEFAULT NULL
+  `reviewed_by` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -195,7 +203,8 @@ CREATE TABLE `wallet` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) DEFAULT NULL,
   `balance` decimal(10,2) DEFAULT 0.00,
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -211,7 +220,8 @@ CREATE TABLE `login_attempts` (
   `email` varchar(100) DEFAULT NULL,
   `ip` varchar(45) DEFAULT NULL,
   `success` tinyint(1) DEFAULT 0,
-  `attempted_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `attempted_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -228,7 +238,8 @@ CREATE TABLE `messages` (
   `listing_id` int(11) DEFAULT NULL,
   `body` text NOT NULL,
   `is_read` tinyint(1) NOT NULL DEFAULT 0,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -245,7 +256,8 @@ CREATE TABLE `wallet_transactions` (
   `amount` decimal(10,2) DEFAULT NULL,
   `type` enum('deposit','hold','release','refund','withdraw') DEFAULT NULL,
   `balance_after` decimal(10,2) DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 
@@ -254,6 +266,7 @@ CREATE TABLE `wallet_transactions` (
 --
 -- Table structure for table `rate limits`
 --
+DROP TABLE IF EXISTS `rate_events`;
 CREATE TABLE `rate_events` (
   `id` INT(11) NOT NULL AUTO_INCREMENT,
   `action` VARCHAR(50) NOT NULL,
@@ -272,7 +285,6 @@ CREATE TABLE `rate_events` (
 -- Indexes for table `disputes`
 --
 ALTER TABLE `disputes`
-  ADD PRIMARY KEY (`id`),
   ADD KEY `order_id` (`order_id`),
   ADD KEY `user_id` (`user_id`);
 
@@ -280,43 +292,32 @@ ALTER TABLE `disputes`
 -- Indexes for table `listings`
 --
 ALTER TABLE `listings`
-  ADD PRIMARY KEY (`id`),
   ADD KEY `user_id` (`user_id`);
 
 --
 -- Indexes for table `orders`
 --
 ALTER TABLE `orders`
-  ADD PRIMARY KEY (`id`),
   ADD KEY `buyer_id` (`buyer_id`),
   ADD KEY `listing_id` (`listing_id`),
   ADD KEY `meetup_store_id` (`meetup_store_id`);
 
 --
--- Indexes for table `stores`
---
-ALTER TABLE `stores`
-  ADD PRIMARY KEY (`id`);
-
---
 -- Indexes for table `notifications`
 --
 ALTER TABLE `notifications`
-  ADD PRIMARY KEY (`id`),
   ADD KEY `idx_notifications_user_unread` (`user_id`, `is_read`, `created_at`);
 
 --
 -- Indexes for table `listing_images`
 --
 ALTER TABLE `listing_images`
-  ADD PRIMARY KEY (`id`),
   ADD KEY `idx_listing_images_listing` (`listing_id`, `sort_order`);
 
 --
 -- Indexes for table `users`
 --
 ALTER TABLE `users`
-  ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `email` (`email`);
 
 --
@@ -324,7 +325,6 @@ ALTER TABLE `users`
 -- UNIQUE on user_id: one active verification per user (replace-on-resubmit)
 --
 ALTER TABLE `verifications`
-  ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `user_id` (`user_id`),
   ADD KEY `reviewed_by` (`reviewed_by`);
 
@@ -333,14 +333,12 @@ ALTER TABLE `verifications`
 -- UNIQUE on user_id: prevent duplicate wallets (6b)
 --
 ALTER TABLE `wallet`
-  ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `user_id` (`user_id`);
 
 --
 -- Indexes for table `wallet_transactions`
 --
 ALTER TABLE `wallet_transactions`
-  ADD PRIMARY KEY (`id`),
   ADD KEY `user_id` (`user_id`),
   ADD KEY `order_id` (`order_id`);
 
@@ -349,7 +347,6 @@ ALTER TABLE `wallet_transactions`
 -- Composite indexes tuned for the rate-limit COUNT query
 --
 ALTER TABLE `login_attempts`
-  ADD PRIMARY KEY (`id`),
   ADD KEY `email_time` (`email`, `attempted_at`),
   ADD KEY `ip_time` (`ip`, `attempted_at`);
 
@@ -357,7 +354,6 @@ ALTER TABLE `login_attempts`
 -- Indexes for table `messages`
 --
 ALTER TABLE `messages`
-  ADD PRIMARY KEY (`id`),
   ADD KEY `sender_id` (`sender_id`),
   ADD KEY `recipient_id` (`recipient_id`),
   ADD KEY `listing_id` (`listing_id`),

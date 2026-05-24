@@ -128,6 +128,7 @@ require_once "../Includes/header.php";
 
 <div class="container">
     <h1>My Sales</h1>
+    <p><a href="<?php echo BASE_URL; ?>/Listings/browse.php">&larr; Back to browse</a></p>
     <p>Items sold from your listings. Funds are released to your wallet once delivery is confirmed.</p>
 
     <?php if ($filter_order_id > 0): ?>
