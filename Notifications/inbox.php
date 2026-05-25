@@ -6,7 +6,6 @@ require_once __DIR__ . '/../Includes/notifications.php';
 $user_id = (int)$_SESSION['user_id'];
 
 // Normalize a notification link so it works regardless of whether the value
-// stored in the DB is absolute ("/ITECA-Website/...") or relative ("Orders/...").
 function normalize_notif_link(?string $link): ?string {
     if ($link === null || $link === '') {
         return null;
@@ -17,7 +16,7 @@ function normalize_notif_link(?string $link): ?string {
     if (str_starts_with($link, '/')) {
         return $link;
     }
-    return '/ITECA-Website/' . ltrim($link, '/');
+    return BASE_URL . '/' . ltrim($link, '/');
 }
 
 // "Mark all as read"
@@ -52,10 +51,10 @@ if (isset($_GET['go']) && ctype_digit((string)$_GET['go'])) {
         $stmt->close();
 
         $target = normalize_notif_link($row['link']);
-        header("Location: " . ($target ?? 'inbox.php'));
+        header("Location: " . ($target ?? BASE_URL . '/Notifications/inbox.php'));
         exit();
     }
-    header("Location: inbox.php");
+    header("Location: " . BASE_URL . '/Notifications/inbox.php');
     exit();
 }
 
@@ -95,7 +94,7 @@ require_once "../Includes/header.php";
                 <?php $has_link = !empty($n['link']); ?>
                 <li class="thread-item <?php if (!$n['is_read']) echo 'thread-unread'; ?>">
                     <?php if ($has_link): ?>
-                        <a href="inbox.php?go=<?php echo (int)$n['id']; ?>">
+                        <a href="<?php echo BASE_URL; ?>/Notifications/inbox.php?go=<?php echo (int)$n['id']; ?>">
                     <?php else: ?>
                         <a href="#" onclick="return false;">
                     <?php endif; ?>

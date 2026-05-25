@@ -32,6 +32,33 @@ if ($listing) {
 $viewer_id = $_SESSION['user_id'] ?? null;
 $is_owner  = $listing && $viewer_id !== null && (int)$listing['user_id'] === (int)$viewer_id;
 
+if (!$listing) {
+    http_response_code(404);
+}
+
+$more_from_seller = [];
+$seller_name = null;
+if ($listing && !empty($listing['user_id'])) {
+    $stmt = $conn->prepare("SELECT name FROM users WHERE id = ?");
+    $stmt->bind_param("i", $listing['user_id']);
+    $stmt->execute();
+    $seller_row = $stmt->get_result()->fetch_assoc();
+    $stmt->close();
+    $seller_name = $seller_row['name'] ?? null;
+
+    $stmt = $conn->prepare("
+        SELECT id, title, price, image
+        FROM listings
+        WHERE user_id = ? AND id <> ? AND status = 'verified'
+        ORDER BY created_at DESC
+        LIMIT 6
+    ");
+    $stmt->bind_param("ii", $listing['user_id'], $id);
+    $stmt->execute();
+    $more_from_seller = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    $stmt->close();
+}
+
 require_once "../Includes/header.php";
 ?>
 
@@ -49,7 +76,7 @@ require_once "../Includes/header.php";
 
         <?php if (!empty($gallery)): ?>
             <div class="gallery">
-                <p><a href="browse.php">&larr; Back to browse</a></p>
+                <p><a href="<?php echo BASE_URL; ?>/Listings/browse.php">&larr; Back to browse</a></p>
                 <img src="../<?php echo htmlspecialchars($gallery[0]); ?>" alt="<?php echo htmlspecialchars($listing['title']); ?>" class="listing-image gallery-main" id="gallery-main">
                 <?php if (count($gallery) > 1): ?>
                     <div class="gallery-thumbs">
@@ -84,17 +111,34 @@ require_once "../Includes/header.php";
         <div class="d-flex gap-2">
             <?php if (!$is_owner): ?>
                 <?php if ($viewer_id !== null): ?>
-                    <p><button class="btn btn-primary" onclick="location.href='../Orders/checkout.php?id=<?php echo (int)$listing['id']; ?>'">Buy Now</button></p>
+                    <p><button class="btn btn-primary" onclick="location.href='<?php echo BASE_URL; ?>/Orders/checkout.php?id=<?php echo (int)$listing['id']; ?>'">Buy Now</button></p>
                     <p><a class="btn btn-primary"
-                        href="../Messages/conversation.php?with=<?php echo (int)$listing['user_id']; ?>&listing=<?php echo (int)$listing['id']; ?>">
+                        href="<?php echo BASE_URL; ?>/Messages/conversation.php?with=<?php echo (int)$listing['user_id']; ?>&listing=<?php echo (int)$listing['id']; ?>">
                         Contact Seller
                     </a></p>
                 <?php else: ?>
-                    <p><a class="btn btn-primary" href="/ITECA-Website/login.php">Log in to buy</a></p>
-                    <p><a class="btn btn-primary" href="/ITECA-Website/login.php">Log in to contact seller</a></p>
+                    <p><a class="btn btn-primary" href="<?php echo BASE_URL; ?>/login.php">Log in to buy</a></p>
+                    <p><a class="btn btn-primary" href="<?php echo BASE_URL; ?>/login.php">Log in to contact seller</a></p>
                 <?php endif; ?>
             <?php endif; ?>
         </div>
+
+        <?php if (!empty($more_from_seller)): ?>
+            <section class="more-from-seller" style="margin-top:2rem;">
+                <h2>More from <?php echo htmlspecialchars($seller_name ?? 'this seller'); ?></h2>
+                <div class="more-from-seller-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:1rem;">
+                    <?php foreach ($more_from_seller as $other): ?>
+                        <a href="view.php?id=<?php echo (int)$other['id']; ?>" class="more-from-seller-card" style="text-decoration:none;color:inherit;">
+                            <?php if (!empty($other['image'])): ?>
+                                <img src="../<?php echo htmlspecialchars($other['image']); ?>" alt="" style="width:100%;height:120px;object-fit:cover;border-radius:6px;">
+                            <?php endif; ?>
+                            <div><strong><?php echo htmlspecialchars($other['title']); ?></strong></div>
+                            <div>R<?php echo htmlspecialchars($other['price']); ?></div>
+                        </a>
+                    <?php endforeach; ?>
+                </div>
+            </section>
+        <?php endif; ?>
     <?php else: ?>
         <p>Listing not found.</p>
     <?php endif; ?>

@@ -109,10 +109,10 @@ function format_rand($n) {
             <p>Buy and sell safely. Every item is dropped off, inspected and verified at a Trustees location before money changes hands.</p>
             <div class="tr-hero-actions">
                 <?php if (isset($_SESSION['user_id'])): ?>
-                    <a href="/ITECA-Website/Listings/create.php" class="btn btn-accent btn-lg"><i class="fas fa-circle-plus"></i> List an item</a>
+                    <a href="<?php echo BASE_URL; ?>/Listings/create.php" class="btn btn-accent btn-lg"><i class="fas fa-circle-plus"></i> List an item</a>
                     <a href="#browse-listings" class="btn btn-ghost-light btn-lg">Browse listings →</a>
                 <?php else: ?>
-                    <a href="/ITECA-Website/register.php" class="btn btn-accent btn-lg"><i class="fas fa-user-plus"></i> Sign up to sell</a>
+                    <a href="<?php echo BASE_URL; ?>/register.php" class="btn btn-accent btn-lg"><i class="fas fa-user-plus"></i> Sign up to sell</a>
                     <a href="#browse-listings" class="btn btn-ghost-light btn-lg">Browse listings →</a>
                 <?php endif; ?>
             </div>

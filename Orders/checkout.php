@@ -59,7 +59,7 @@ if ($result) {
     }
 }
 
-$error = $unavailable ?? null;
+$error = $unavailable ?: null;
 $success = null;
 
 if ($_SERVER["REQUEST_METHOD"] === "POST" && !$error) {
@@ -187,7 +187,7 @@ require_once "../Includes/header.php";
         <p><strong>Your wallet balance:</strong> R<?php echo number_format($balance, 2); ?></p>
     </div>
     
-    <?php if ($unavailable == false): ?>
+    <?php if (!$unavailable): ?>
         <?php if ($balance < (float)$listing['price']): ?>
             <p>You don't have enough funds to buy this item.</p>
             <a href="../Profile/wallet.php" class="btn btn-primary">Deposit Funds</a>

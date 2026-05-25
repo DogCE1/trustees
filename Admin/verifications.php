@@ -54,7 +54,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
                 $conn->commit();
 
-                notify($conn, $target_user_id, "Your account has been verified. You can now create listings.", "/ITECA-Website/Listings/create.php");
+                notify($conn, $target_user_id, "Your account has been verified. You can now create listings.", BASE_URL . "/Listings/create.php");
                 set_flash('success', "Verification approved for " . ($info['user_name'] ?? 'user') . ".");
             } catch (Exception $e) {
                 $conn->rollback();
@@ -84,7 +84,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 if ($reason !== '') {
                     $msg .= " Reason: $reason";
                 }
-                notify($conn, $target_user_id, $msg, "/ITECA-Website/Verification/verify.php");
+                notify($conn, $target_user_id, $msg, BASE_URL . "/Verification/verify.php");
                 set_flash('success', "Verification rejected for " . ($info['user_name'] ?? 'user') . ".");
             } catch (Exception $e) {
                 $conn->rollback();

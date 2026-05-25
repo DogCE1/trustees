@@ -3,7 +3,7 @@ require_once "../Includes/auth.php";
 require_once "../Includes/db.php";
 
 if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
-    header("Location: /ITECA-Website/Admin/dashboard.php");
+    header("Location: " . BASE_URL . "/Admin/dashboard.php");
     exit();
 }
 
@@ -17,7 +17,7 @@ $user = $result->fetch_assoc();
 $stmt->close();
 
 if (!$user || (int)$user['is_verified'] !== 1) {
-    header("Location: ../index.php");
+    header("Location: " . BASE_URL . "/index.php");
     exit();
 }
 
@@ -26,7 +26,7 @@ $create_error = null;
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
         set_flash('error', "CSRF token validation failed.");
-        header("Location: create.php");
+        header("Location: " . BASE_URL . "/Listings/create.php");
         exit();
     }
     $title       = trim($_POST['Title'] ?? '');
@@ -43,6 +43,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     ];
     $allowed_exts = ['jpg', 'jpeg', 'png', 'webp'];
     $max_images   = 5;
+    $max_file_size = 5 * 1024 * 1024; // 5 MB per image
+    $categories = ['Electronics', 'Furniture', 'Clothing', 'Books', 'Sports', 'Other'];
+    $conditions = ['new', 'like_new', 'good', 'fair', 'poor', 'refurbished'];
 
     // Basic validation
     if ($title === '' || $description === '' || $price === '' || $category === '' || $condition === '') {
@@ -53,6 +56,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $create_error = "Title cannot exceed 150 characters.";
     } elseif (mb_strlen($description) > 5000) {
         $create_error = "Description cannot exceed 5000 characters.";
+    } elseif (!in_array($category, $categories, true)) {
+        $create_error = "Invalid category.";
+    } elseif (!in_array($condition, $conditions, true)) {
+        $create_error = "Invalid condition.";
     } elseif (!isset($_FILES['images']) || !is_array($_FILES['images']['name'])) {
         $create_error = "Please upload at least one image.";
     } else {
@@ -84,6 +91,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             $tmp_path      = $_FILES['images']['tmp_name'][$i];
             $original_name = $_FILES['images']['name'][$i];
+            $file_size     = (int)($_FILES['images']['size'][$i] ?? 0);
+
+            if ($file_size <= 0 || $file_size > $max_file_size) {
+                $create_error = "\"$original_name\" exceeds the " . ($max_file_size / 1024 / 1024) . " MB size limit.";
+                break;
+            }
+
             $mime          = mime_content_type($tmp_path);
             $ext_in_name   = strtolower(pathinfo($original_name, PATHINFO_EXTENSION));
 
@@ -125,7 +139,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         if ($create_error && !empty($saved_paths)) {
             foreach ($saved_paths as $p) {
-                @unlink($_SERVER['DOCUMENT_ROOT'] . '/ITECA-Website/' . $p);
+                @unlink(__DIR__ . '/../' . $p);
             }
             $saved_paths = [];
         }
@@ -161,7 +175,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         } catch (Exception $e) {
             $conn->rollback();
             foreach ($saved_paths as $p) {
-                @unlink($_SERVER['DOCUMENT_ROOT'] . '/ITECA-Website/' . $p);
+                @unlink(__DIR__ . '/../' . $p);
             }
             $create_error = "Error creating listing.";
         }

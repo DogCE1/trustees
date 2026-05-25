@@ -40,7 +40,7 @@ function save_uploaded_file($field, $allowed_mimes, $target_subdir) {
         return [null, "{$field} extension does not match its content."];
     }
 
-    $target_dir = $_SERVER['DOCUMENT_ROOT'] . "/ITECA-Website/Uploads/" . $target_subdir . "/";
+    $target_dir = __DIR__ . "/../Uploads/" . $target_subdir . "/";
     if (!is_dir($target_dir) && !mkdir($target_dir, 0755, true)) {
         return [null, "Server cannot write to {$target_subdir} folder."];
     }
@@ -80,7 +80,7 @@ function save_uploaded_file($field, $allowed_mimes, $target_subdir) {
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
         set_flash("Invalid CSRF token. Please try again.", "danger");
-        header("Location: Verify.php");
+        header("Location: verify.php");
         exit();
     }
     $full_name = trim($_POST['full_name'] ?? '');

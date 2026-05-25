@@ -60,7 +60,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $stmt->close();
 
         if ($approved) {
-            notify($conn, $seller_id, "Your listing \"$title\" was approved.", "/ITECA-Website/Listings/my_listings.php");
+            notify($conn, $seller_id, "Your listing \"$title\" was approved.", BASE_URL . "/Listings/my_listings.php");
             set_flash('success', "Listing \"$title\" approved.");
         } else {
             set_flash('error', "Could not approve listing.");
@@ -80,7 +80,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             if ($reason !== '') {
                 $msg .= " Reason: $reason";
             }
-            notify($conn, $seller_id, $msg, "/ITECA-Website/Listings/my_listings.php");
+            notify($conn, $seller_id, $msg, BASE_URL . "/Listings/my_listings.php");
             set_flash('success', "Listing \"$title\" rejected.");
         } else {
             set_flash('error', "Could not reject listing.");
@@ -150,7 +150,7 @@ require_once '../Includes/header.php';
 
 <div class="container">
     <h1>Verify Listings</h1>
-    <p><a href="/ITECA-Website/Admin/dashboard.php" class="btn btn-secondary"><strong>&larr; Back to Dashboard</strong></a></p>
+    <p><a href="dashboard.php" class="btn btn-secondary"><strong>&larr; Back to Dashboard</strong></a></p>
     <p>Review pending listings. You can edit details before approving, or reject with a reason.</p>
 
     <?php if ($flash_success): ?>
