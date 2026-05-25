@@ -40,7 +40,7 @@ $send_error = null;
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
         set_flash('error', "CSRF token validation failed.");
-        header("Location: conversation.php?with=$with" . ($listing ? "&listing=$listing" : ""));
+        header("Location: " . BASE_URL . "/Messages/conversation.php?with=$with" . ($listing ? "&listing=$listing" : ""));
         exit();
     }
     $body = trim($_POST['body'] ?? '');
@@ -66,7 +66,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $notif_link  = BASE_URL . "/Messages/conversation.php?with=$me" . ($listing ? "&listing=$listing" : "");
             notify($conn, $with, "New message from " . $sender_name, $notif_link);
 
-            header("Location: conversation.php?with=$with" . ($listing ? "&listing=$listing" : ""));
+            header("Location: " . BASE_URL . "/Messages/conversation.php?with=$with" . ($listing ? "&listing=$listing" : ""));
             exit();
         } catch (Throwable $e) {
             $send_error = "Could not send message: " . $e->getMessage();
@@ -84,19 +84,44 @@ $mark->bind_param("iii", $me, $with, $listing);
 $mark->execute();
 $mark->close();
 
-// Load thread
+// Pagination — fetch newest page first, show oldest at top via array_reverse.
+$per_page = 100;
+$page     = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+$offset   = ($page - 1) * $per_page;
+
+$cnt = $conn->prepare("
+    SELECT COUNT(*) AS c FROM messages
+    WHERE ((sender_id = ? AND recipient_id = ?) OR (sender_id = ? AND recipient_id = ?))
+      AND (listing_id <=> ?)
+");
+$cnt->bind_param("iiiii", $me, $with, $with, $me, $listing);
+$cnt->execute();
+$total_messages = (int)($cnt->get_result()->fetch_assoc()['c'] ?? 0);
+$cnt->close();
+
+$total_pages = max(1, (int)ceil($total_messages / $per_page));
+if ($page > $total_pages) $page = $total_pages;
+$offset = ($page - 1) * $per_page;
+
 $stmt = $conn->prepare("
     SELECT id, sender_id, body, created_at
     FROM messages
     WHERE ((sender_id = ? AND recipient_id = ?) OR (sender_id = ? AND recipient_id = ?))
       AND (listing_id <=> ?)
-    ORDER BY created_at ASC, id ASC
-    LIMIT 500
+    ORDER BY created_at DESC, id DESC
+    LIMIT ? OFFSET ?
 ");
-$stmt->bind_param("iiiii", $me, $with, $with, $me, $listing);
+$stmt->bind_param("iiiiiii", $me, $with, $with, $me, $listing, $per_page, $offset);
 $stmt->execute();
-$messages = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+$messages = array_reverse($stmt->get_result()->fetch_all(MYSQLI_ASSOC));
 $stmt->close();
+
+$page_link = function ($p) use ($with, $listing) {
+    $q = "with=$with";
+    if ($listing) $q .= "&listing=$listing";
+    $q .= "&page=$p";
+    return BASE_URL . "/Messages/conversation.php?" . $q;
+};
 
 include "../Includes/header.php";
 ?>
@@ -114,6 +139,22 @@ include "../Includes/header.php";
 
     <?php if ($send_error): ?>
         <div class="alert alert-danger"><?php echo htmlspecialchars($send_error); ?></div>
+    <?php endif; ?>
+
+    <?php if ($total_pages > 1): ?>
+        <div class="message-pagination" style="display:flex;justify-content:space-between;align-items:center;margin:.5rem 0;">
+            <?php if ($page < $total_pages): ?>
+                <a href="<?php echo htmlspecialchars($page_link($page + 1)); ?>">&larr; Earlier messages</a>
+            <?php else: ?>
+                <span></span>
+            <?php endif; ?>
+            <small class="text-muted">Page <?php echo $page; ?> of <?php echo $total_pages; ?> &middot; <?php echo $total_messages; ?> messages</small>
+            <?php if ($page > 1): ?>
+                <a href="<?php echo htmlspecialchars($page_link($page - 1)); ?>">Newer messages &rarr;</a>
+            <?php else: ?>
+                <span></span>
+            <?php endif; ?>
+        </div>
     <?php endif; ?>
 
     <div class="message-thread">

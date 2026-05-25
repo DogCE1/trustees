@@ -56,9 +56,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $reason = trim($_POST['reason'] ?? '');
         if ($reason === '') {
             $error = "Please describe the issue.";
-        } elseif (strlen($reason) > 2000) {
-            $error = "Reason is too long (max 2000 characters).";
-        } elseif (mb_strlen($reason) > 2000){
+        } elseif (mb_strlen($reason) > 2000) {
             $error = "Reason cannot exceed 2000 characters.";
         } else {
             $evidence_for_db = null;
@@ -89,7 +87,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     if (!$image) {
                         $error = "Failed to process evidence image.";
                     } else {
-                        $target_dir = $_SERVER['DOCUMENT_ROOT'] . BASE_URL . "/Uploads/disputes/";
+                        $target_dir = __DIR__ . "/../Uploads/disputes/";
                         if (!is_dir($target_dir)) {
                             mkdir($target_dir, 0755, true);
                         }
@@ -133,7 +131,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
                     notify_seller_order_status($conn, (int)$order['seller_id'], $order_id, "buyer opened a dispute. Funds remain in escrow until an admin reviews.");
 
-                    set_flash('error', "Dispute submitted. An admin will review it shortly.");
+                    set_flash('success', "Dispute submitted. An admin will review it shortly.");
                     header("Location: my_orders.php");
                     exit();
                 } catch (Exception $e) {

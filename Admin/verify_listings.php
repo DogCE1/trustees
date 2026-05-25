@@ -150,7 +150,7 @@ require_once '../Includes/header.php';
 
 <div class="container">
     <h1>Verify Listings</h1>
-    <p><a href="<?= BASE_URL ?>/Admin/dashboard.php" class="btn btn-secondary"><strong>&larr; Back to Dashboard</strong></a></p>
+    <p><a href="dashboard.php" class="btn btn-secondary"><strong>&larr; Back to Dashboard</strong></a></p>
     <p>Review pending listings. You can edit details before approving, or reject with a reason.</p>
 
     <?php if ($flash_success): ?>

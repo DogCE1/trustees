@@ -5,7 +5,7 @@ require_once "Includes/account.php";
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
      if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
         set_flash('error', "CSRF token validation failed.");
-        header("Location: login.php");
+        header("Location: " . BASE_URL . "/login.php");
         exit();
     }
     $email = $_POST['email'];
@@ -25,7 +25,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if ($fails >= 5) {
         set_flash('error', "Too many failed attempts. Please wait a minute and try again.");
-        header("Location: login.php");
+        header("Location: " . BASE_URL . "/login.php");
         exit();
     }
 
@@ -59,7 +59,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if (account_can_be_deleted($conn, (int)$row['id'], $reason)) {
                 account_hard_delete($conn, (int)$row['id']);
                 set_flash('error', "Your account has been deleted as requested. Goodbye.");
-                header("Location: login.php");
+                header("Location: " . BASE_URL . "/login.php");
                 exit();
             }
             // Blocked: log them in so they can resolve the blocker, then they'll see the banner.
@@ -71,14 +71,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $_SESSION['user_name'] = $row['name'];
         $_SESSION['role'] = $row['role'];
         if ($row['role'] == 'admin') {
-            header("Location: Admin/dashboard.php");
+            header("Location: " . BASE_URL . "/Admin/dashboard.php");
         } else {
-            header("Location: index.php");
+            header("Location: " . BASE_URL . "/index.php");
         }
         exit();
     } else {
         set_flash('error', "Invalid email or password.");
-        header("Location: login.php");
+        header("Location: " . BASE_URL . "/login.php");
         exit();
     }
 }

@@ -2,9 +2,9 @@
 require_once "Includes/session.php";
 
 if (isset($_SESSION['user_id']) && isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
-    header("Location: Admin/dashboard.php");
+    header("Location: " . BASE_URL . "/Admin/dashboard.php");
     exit();
 }
 
-header("Location: Listings/browse.php");
+header("Location: " . BASE_URL . "/Listings/browse.php");
 exit();

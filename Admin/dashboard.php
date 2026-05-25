@@ -18,6 +18,7 @@ $counts = [
     'orders_proof'          => scalar_count($conn, "SELECT COUNT(*) AS c FROM orders o JOIN users u ON o.buyer_id = u.id WHERE o.status = 'pending_admin_approval'"),
     'orders_completed'      => scalar_count($conn, "SELECT COUNT(*) AS c FROM orders o JOIN users u ON o.buyer_id = u.id WHERE o.status = 'delivered'"),
     'disputes_open'         => scalar_count($conn, "SELECT COUNT(*) AS c FROM disputes d JOIN users u ON d.user_id = u.id WHERE d.status = 'open'"),
+    'disputes_overdue'      => scalar_count($conn, "SELECT COUNT(*) AS c FROM disputes d JOIN users u ON d.user_id = u.id WHERE d.status = 'open' AND d.created_at < (NOW() - INTERVAL 7 DAY)"),
     'disputes_total'        => scalar_count($conn, "SELECT COUNT(*) AS c FROM disputes d JOIN users u ON d.user_id = u.id"),
     'verifications_pending' => scalar_count($conn, "SELECT COUNT(*) AS c FROM verifications v JOIN users u ON v.user_id = u.id WHERE v.status = 'pending'"),
     'verifications_total'   => scalar_count($conn, "SELECT COUNT(*) AS c FROM verifications v JOIN users u ON v.user_id = u.id"),
@@ -59,7 +60,11 @@ require_once "../Includes/header.php";
                 <a class="dashboard-item dashboard-item-attention" href="disputes.php?status=open">
                     <h2>Open disputes</h2>
                     <p><?php echo $counts['disputes_open']; ?></p>
-                    <span>Resolve &rarr;</span>
+                    <?php if ($counts['disputes_overdue'] > 0): ?>
+                        <span><strong style="color:#c00;"><?php echo $counts['disputes_overdue']; ?> over 7 days</strong> &middot; Resolve &rarr;</span>
+                    <?php else: ?>
+                        <span>Resolve &rarr;</span>
+                    <?php endif; ?>
                 </a>
             <?php endif; ?>
         </div>

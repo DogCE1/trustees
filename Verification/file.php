@@ -27,8 +27,8 @@ if (!$row || empty($row['path'])) {
     exit("Not found.");
 }
 
-$base = realpath($_SERVER['DOCUMENT_ROOT'] . BASE_URL . "/Uploads/verification");
-$full = realpath($_SERVER['DOCUMENT_ROOT'] . BASE_URL . "/" . $row['path']);
+$base = realpath(__DIR__ . "/../Uploads/verification");
+$full = realpath(__DIR__ . "/../" . $row['path']);
 
 if (!$full || !$base || strpos($full, $base) !== 0 || !is_file($full)) {
     http_response_code(404);
