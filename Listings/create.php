@@ -193,7 +193,6 @@ require_once "../Includes/header.php";
         <?php endif; ?>
 
         <form action="create.php" method="post" enctype="multipart/form-data">
-            <ul style="list-style-type: none; padding: 0; margin: 0;">
             <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
             <ul style="list-style-type: none; margin: 0; padding: 0;">
               
