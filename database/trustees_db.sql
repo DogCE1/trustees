@@ -10,6 +10,7 @@
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
+SET FOREIGN_KEY_CHECKS = 0;
 
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -275,6 +276,26 @@ CREATE TABLE `rate_events` (
   KEY `action_key_time` (`action`, `key_value`, `created_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- --------------------------------------------------------
+--
+-- Table structure for table `otp_codes`
+-- Used for email verification and 2FA (6d)
+--
+DROP TABLE IF EXISTS `otp_codes`;
+CREATE TABLE otp_codes (
+    id            INT AUTO_INCREMENT PRIMARY KEY,
+    user_id       INT NOT NULL,
+    purpose       VARCHAR(40) NOT NULL,
+    code_hash     VARCHAR(255) NOT NULL,
+    email         VARCHAR(255) NOT NULL,
+    expires_at    DATETIME NOT NULL,
+    attempts      INT NOT NULL DEFAULT 0,
+    used_at       DATETIME NULL,
+    created_at    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    INDEX idx_user_purpose (user_id, purpose),
+    INDEX idx_expires (expires_at)
+);
 
 --
 -- Indexes for dumped tables
@@ -469,6 +490,7 @@ ALTER TABLE `messages`
   ADD CONSTRAINT `fk_messages_recipient` FOREIGN KEY (`recipient_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `fk_messages_listing` FOREIGN KEY (`listing_id`) REFERENCES `listings` (`id`) ON DELETE SET NULL;
 
+SET FOREIGN_KEY_CHECKS = 1;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
