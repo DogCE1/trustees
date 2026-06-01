@@ -163,9 +163,9 @@ include "../Includes/header.php";
         <?php endif; ?>
         <?php foreach ($messages as $m): ?>
             <div class="message-row <?php echo $m['sender_id'] == $me ? 'message-mine' : 'message-theirs'; ?>">
-                <div class="message-bubble">
-                    <?php echo nl2br(htmlspecialchars($m['body'])); ?>
-                </div>
+                <!-- Leave in one row to avoid extra whitespace between messages from same sender -->
+                <div class="message-bubble"><?php echo nl2br(htmlspecialchars(trim($m['body']))); ?></div>
+
                 <div class="message-meta">
                     <?php echo date("Y-m-d H:i", strtotime($m['created_at'])); ?>
                 </div>

@@ -1,7 +1,10 @@
 // Profile dropdown + live search + back-nav reset
+let mobileMenu = null;
+let profileMenu = null;
+
 document.addEventListener("DOMContentLoaded", () => {
-  initMobileMenu();
-  initProfileDropdown();
+  mobileMenu = initMobileMenu();
+  profileMenu = initProfileDropdown();
   initQuickCategoryButtons();
   initLiveSearch();
 });
@@ -9,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
 function initMobileMenu() {
   const toggle = document.getElementById("menu-bar");
   const navbar = document.querySelector(".header .navbar");
-  if (!toggle || !navbar) return;
+  if (!toggle || !navbar) return null;
   toggle.setAttribute("role", "button");
   toggle.setAttribute("tabindex", "0");
   toggle.setAttribute("aria-controls", "primary-nav");
@@ -17,6 +20,7 @@ function initMobileMenu() {
   navbar.id = navbar.id || "primary-nav";
 
   const setOpen = (open) => {
+    if (open && profileMenu) profileMenu.close();
     navbar.classList.toggle("active", open);
     toggle.setAttribute("aria-expanded", String(open));
   };
@@ -33,6 +37,8 @@ function initMobileMenu() {
   navbar
     .querySelectorAll("a")
     .forEach((a) => a.addEventListener("click", () => setOpen(false)));
+
+  return { close: () => setOpen(false) };
 }
 
 // When the page is restored from the back-forward cache, the previously
@@ -49,27 +55,31 @@ window.addEventListener("pageshow", (event) => {
 function initProfileDropdown() {
   const btn = document.getElementById("user-btn");
   const menu = document.getElementById("profile-menu");
-  if (!btn || !menu) return;
+  if (!btn || !menu) return null;
+
+  const setOpen = (open) => {
+    if (open && mobileMenu) mobileMenu.close();
+    menu.hidden = !open;
+    btn.setAttribute("aria-expanded", String(open));
+  };
 
   btn.addEventListener("click", (e) => {
     e.stopPropagation();
-    const isOpen = !menu.hidden;
-    menu.hidden = isOpen;
-    btn.setAttribute("aria-expanded", String(!isOpen));
+    setOpen(menu.hidden);
   });
   document.addEventListener("click", (e) => {
     if (!menu.hidden && !menu.contains(e.target) && e.target !== btn) {
-      menu.hidden = true;
-      btn.setAttribute("aria-expanded", "false");
+      setOpen(false);
     }
   });
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape" && !menu.hidden) {
-      menu.hidden = true;
-      btn.setAttribute("aria-expanded", "false");
+      setOpen(false);
       btn.focus();
     }
   });
+
+  return { close: () => setOpen(false) };
 }
 
 // Quick category chips: set the search form's category select and re-run.
