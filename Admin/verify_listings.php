@@ -213,12 +213,16 @@ require_once '../Includes/header.php';
                             </select>
                         </label>
                     </div>
-                    <label style="display:block; margin-top:.5rem;">Description
-                        <textarea name="description" rows="3" style="width:100%; max-width:800px;"><?php echo htmlspecialchars($listing['description'] ?? ''); ?></textarea>
-                    </label>
-
-                    <div style="margin-top:.5rem;">
-                        <textarea name="rejection_reason" rows="2" cols="50" placeholder="Reason (required for rejection)"></textarea>
+                    
+                    <div style="display:block; margin-top:.5rem;">  
+                        <label >Description
+                            <textarea name="description" rows="3" style="width:100%; max-width:800px;"><?php echo htmlspecialchars($listing['description'] ?? ''); ?></textarea>
+                        </label>
+                    </div>
+                    <div style="display:block; margin-top:.5rem;">                     
+                        <label>Rejection reason
+                            <textarea name="rejection_reason" rows="2" cols="50" style="width:100%; max-width:800px; placeholder="Reason (required for rejection)"></textarea>
+                        </label>
                     </div>
 
                     <div style="margin-top:.5rem; display:flex; gap:.5rem; flex-wrap:wrap;">

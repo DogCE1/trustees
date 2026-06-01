@@ -147,12 +147,13 @@ function format_rand($n) {
     <h1 id="browse-listings">Browse Verified Listings</h1>
     <p class="tr-muted" style="margin-top:-4px;"><?= count($listings) ?> verified item<?= count($listings) === 1 ? '' : 's' ?> · tap a card for details</p>
 
+    <!-- Filtering and search form -->
     <form method="get" class="search-form" data-live-search="search_api.php">
         <div style="display:flex; flex-wrap:wrap; gap:10px; align-items:center;">
-            <input type="text" name="q" placeholder="Search by title or description"
+            <!-- Search bar -->
+            <input type="text" name="q" style="width:auto;" placeholder="Search by title or description"
                    value="<?php echo htmlspecialchars($q); ?>" style="flex:1; min-width:200px;"
                    autocomplete="off">
-
             <select name="category" data-filter-category style="width:auto;">
                 <option value="">All categories</option>
                 <?php foreach ($valid_categories as $c): ?>
@@ -183,10 +184,10 @@ function format_rand($n) {
             </select>
 
             <button type="submit" class="btn btn-primary">Search</button>
-            <a href="browse.php" class="btn btn-secondary">Reset</a>
+            <a href="browse.php" class="btn btn-secondary" style="text-align:center;">Reset</a>
         </div>
     </form>
-
+<!-- filter buttons -->
     <div class="Filter-buttons">
         <button type="button" data-quick-category=""<?= $category === '' ? ' class="is-active"' : '' ?>>All</button>
         <?php foreach ($valid_categories as $c): ?>
@@ -206,7 +207,7 @@ function format_rand($n) {
                 <a class="listing-card" href="view.php?id=<?= (int)$r['id'] ?>">
                     <div class="listing-card-media">
                      <?php if ($r['image']): ?>
-                            <img src="<?= BASE_URL ?>/uploads/<?= htmlspecialchars($r['image']) ?>">
+                            <img src="<?= BASE_URL ?>/<?= htmlspecialchars($r['image']) ?>" >
                         <?php elseif ($r['title'] === ''): ?>
                             <div class="listing-card-placeholder">No image</div>
                         <?php else: ?>
