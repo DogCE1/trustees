@@ -38,4 +38,5 @@ To set up the database: in phpMyAdmin, import `database/trustees_db.sql`, then i
 
 ## Project Status
 
-Currently under development as part of a college project.
+Up and working.
+Link to website: https://trustees.rf.gd/Listings/browse.php
