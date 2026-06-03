@@ -56,7 +56,10 @@ function nav_active($script_names, $current) {
     <header class="header">
         <div id="menu-bar" class="fas fa-bars"></div>
         <?php $is_admin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin'; ?>
-        <a href="<?= $is_admin ? BASE_URL . '/Admin/dashboard.php' : BASE_URL . '/index.php' ?>" class="logo">Trustees</a>
+        <a href="<?= $is_admin ? BASE_URL . '/Admin/dashboard.php' : BASE_URL . '/index.php' ?>" class="logo">
+            <img src="<?= BASE_URL ?>/assets/logo-mark.svg" alt="Trustees logo">
+            <span>Trustees</span>
+        </a>
         <?php if ($is_admin): ?>
             <nav class="navbar">
                 <ul>
