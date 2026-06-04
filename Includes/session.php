@@ -1,13 +1,15 @@
 <?php
 // Start the session if it hasn't already been started. This allows us to use $_SESSION for storing user data,
-// flash messages, and CSRF tokens throughout the application.
-// We check the session status to avoid calling session_start() multiple times, which would cause a warning.
+// Flash messages, and CSRF tokens throughout the application.
+// Check session status to avoid calling session_start() multiple times, which would cause a warning.
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
 if (!defined('BASE_URL')) {
     $docRoot = isset($_SERVER['DOCUMENT_ROOT']) ? str_replace('\\', '/', realpath($_SERVER['DOCUMENT_ROOT'])) : '';
+    // Calculate the base URL by comparing the document root with the application root directory.
+    // Allows to generate correct URL links.
     $appRoot = str_replace('\\', '/', realpath(dirname(__DIR__)));
     $base = '';
     if ($docRoot !== '' && $appRoot !== false && strpos($appRoot, $docRoot) === 0) {

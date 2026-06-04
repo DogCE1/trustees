@@ -127,7 +127,11 @@ require_once "../Includes/header.php";
 
 <div class="container">
     <h1>My Profile</h1>
-     <p><a href="<?php echo BASE_URL; ?>/Listings/browse.php">&larr; Back to browse</a></p>
+    <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
+        <p><a href="<?php echo BASE_URL; ?>/Admin/dashboard.php">&larr; Back to dashboard</a></p>
+    <?php else: ?>
+        <p><a href="<?php echo BASE_URL; ?>/Listings/browse.php">&larr; Back to browse</a></p>
+    <?php endif; ?>
     <?php if ($error): ?>
         <div class="alert alert-danger"><?php echo htmlspecialchars($error); ?></div>
     <?php endif; ?>
