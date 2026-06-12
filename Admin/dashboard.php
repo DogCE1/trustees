@@ -43,14 +43,14 @@ require_once "../Includes/header.php";
                 </a>
             <?php endif; ?>
             <?php if ($counts['verifications_pending'] > 0): ?>
-                <a class="dashboard-item dashboard-item-attention" href="verifications.php">
+                <a class="dashboard-item dashboard-item-attention" href="verifications.php?status=pending">
                     <h2>Account verifications</h2>
                     <p><?php echo $counts['verifications_pending']; ?></p>
                     <span>Review &rarr;</span>
                 </a>
             <?php endif; ?>
             <?php if ($counts['orders_proof'] > 0): ?>
-                <a class="dashboard-item dashboard-item-attention" href="orders.php">
+                <a class="dashboard-item dashboard-item-attention" href="orders.php?filter=proof">
                     <h2>Delivery proofs awaiting review</h2>
                     <p><?php echo $counts['orders_proof']; ?></p>
                     <span>Review &rarr;</span>
@@ -79,7 +79,7 @@ require_once "../Includes/header.php";
             <p><?php echo $counts['users']; ?></p>
             <span>View &rarr;</span>
         </a>
-        <a class="dashboard-item" href="listings.php">
+        <a class="dashboard-item" href="listings.php?status=verified">
             <h2>Listings (active)</h2>
             <p><?php echo $counts['listings_verified']; ?></p>
             <span>View &rarr;</span>
@@ -89,12 +89,12 @@ require_once "../Includes/header.php";
             <p><?php echo $counts['listings_total']; ?></p>
             <span>View &rarr;</span>
         </a>
-        <a class="dashboard-item" href="orders.php">
+        <a class="dashboard-item" href="orders.php?filter=active">
             <h2>Orders in progress</h2>
             <p><?php echo $counts['orders_active']; ?></p>
             <span>View &rarr;</span>
         </a>
-        <a class="dashboard-item" href="orders.php">
+        <a class="dashboard-item" href="orders.php?filter=completed">
             <h2>Orders completed</h2>
             <p><?php echo $counts['orders_completed']; ?></p>
             <span>View &rarr;</span>
@@ -104,7 +104,7 @@ require_once "../Includes/header.php";
             <p><?php echo $counts['disputes_total']; ?></p>
             <span>View &rarr;</span>
         </a>
-        <a class="dashboard-item" href="verifications.php">
+        <a class="dashboard-item" href="verifications.php?status=all">
             <h2>Verifications (total)</h2>
             <p><?php echo $counts['verifications_total']; ?></p>
             <span>View &rarr;</span>
