@@ -42,18 +42,35 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     exit();
 }
 
+$filter = $_GET['status'] ?? 'all';
+$valid_filters = ['all', 'pending', 'verified', 'sold', 'rejected'];
+if (!in_array($filter, $valid_filters, true)) {
+    $filter = 'all';
+}
+
 $search = trim($_GET['q'] ?? '');
 
 $sql = "SELECT l.*, u.name AS seller_name, u.surname AS seller_surname
         FROM listings l
         JOIN users u ON l.user_id = u.id";
+$where  = [];
 $params = [];
 $types  = '';
+
+if ($filter !== 'all') {
+    $where[] = "l.status = ?";
+    $params[] = $filter;
+    $types .= 's';
+}
+
 if ($search !== '') {
-    $sql .= " WHERE l.title LIKE ? OR l.description LIKE ? OR l.category LIKE ? OR u.name LIKE ? OR u.surname LIKE ?";
+    $where[] = "(l.title LIKE ? OR l.description LIKE ? OR l.category LIKE ? OR u.name LIKE ? OR u.surname LIKE ?)";
     $like = '%' . $search . '%';
     array_push($params, $like, $like, $like, $like, $like);
-    $types = 'sssss';
+    $types .= 'sssss';
+}
+if ($where) {
+    $sql .= " WHERE " . implode(' AND ', $where);
 }
 $sql .= " ORDER BY l.created_at DESC";
 
@@ -76,11 +93,22 @@ require_once '../Includes/header.php';
     <p>Edit any listing's details. Use the status dropdown to approve, reject, or mark as sold.</p>
     <p><a href="dashboard.php" class="btn btn-secondary"><strong>&larr; Back to Dashboard</strong></a></p>
 
+    <div class="dispute-filters" style="margin:1em 0;">
+        <strong>Filter:</strong>
+        <a href="listings.php?status=all">All</a> |
+        <a href="listings.php?status=pending">Pending</a> |
+        <a href="listings.php?status=verified">Verified</a> |
+        <a href="listings.php?status=sold">Sold</a> |
+        <a href="listings.php?status=rejected">Rejected</a>
+        <span style="margin-left:1em;">Showing: <strong><?php echo htmlspecialchars(ucfirst($filter)); ?></strong></span>
+    </div>
+
     <form method="get" action="listings.php" style="margin-bottom:1em; display:flex; gap:.5rem; max-width:500px;">
+        <input type="hidden" name="status" value="<?php echo htmlspecialchars($filter); ?>">
         <input type="search" name="q" value="<?php echo htmlspecialchars($search); ?>" placeholder="Search by title, category, description, or seller…" style="flex:1;">
         <button type="submit" class="btn btn-primary">Search</button>
         <?php if ($search !== ''): ?>
-            <a href="listings.php" class="btn btn-secondary">Clear</a>
+            <a href="listings.php?status=<?php echo urlencode($filter); ?>" class="btn btn-secondary">Clear</a>
         <?php endif; ?>
     </form>
 

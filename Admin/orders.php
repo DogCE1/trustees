@@ -127,6 +127,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     exit();
 }
 
+$filter = $_GET['filter'] ?? 'all';
+$valid_filters = ['all', 'proof', 'active', 'completed'];
+if (!in_array($filter, $valid_filters, true)) {
+    $filter = 'all';
+}
+
 $search = trim($_GET['q'] ?? '');
 
 $sql = "SELECT
@@ -137,14 +143,27 @@ $sql = "SELECT
         FROM orders o
         LEFT JOIN users u ON o.buyer_id = u.id
         LEFT JOIN listings l ON o.listing_id = l.id";
+$where  = [];
 $params = [];
 $types  = '';
+
+if ($filter === 'proof') {
+    $where[] = "o.status = 'pending_admin_approval'";
+} elseif ($filter === 'active') {
+    $where[] = "o.status NOT IN ('delivered', 'cancelled', 'refunded')";
+} elseif ($filter === 'completed') {
+    $where[] = "o.status = 'delivered'";
+}
+
 if ($search !== '') {
-    $sql .= " WHERE o.id = ? OR l.title LIKE ? OR u.name LIKE ? OR u.surname LIKE ? OR o.delivery_address LIKE ?";
+    $where[] = "(o.id = ? OR l.title LIKE ? OR u.name LIKE ? OR u.surname LIKE ? OR o.delivery_address LIKE ?)";
     $like = '%' . $search . '%';
     $id_search = ctype_digit($search) ? (int)$search : 0;
     array_push($params, $id_search, $like, $like, $like, $like);
     $types = 'issss';
+}
+if ($where) {
+    $sql .= " WHERE " . implode(' AND ', $where);
 }
 $sql .= " ORDER BY
             CASE o.status
@@ -173,11 +192,28 @@ require_once '../Includes/header.php';
     <p>Edit any order's details. Orders awaiting admin approval (delivery proof review) are listed first.</p>
     <p><a href="dashboard.php" class="btn btn-secondary"><strong>&larr; Back to Dashboard</strong></a></p>
 
+    <?php
+    $filter_labels = [
+        'all'       => 'All',
+        'proof'     => 'Awaiting proof review',
+        'active'    => 'In progress',
+        'completed' => 'Completed',
+    ];
+    ?>
+    <div class="dispute-filters" style="margin:1em 0;">
+        <strong>Filter:</strong>
+        <?php $links = []; foreach ($filter_labels as $key => $label): ?>
+            <?php $links[] = '<a href="orders.php?filter=' . $key . '">' . $label . '</a>'; ?>
+        <?php endforeach; echo implode(' | ', $links); ?>
+        <span style="margin-left:1em;">Showing: <strong><?php echo htmlspecialchars($filter_labels[$filter]); ?></strong></span>
+    </div>
+
     <form method="get" action="orders.php" style="margin-bottom:1em; display:flex; gap:.5rem; max-width:500px;">
+        <input type="hidden" name="filter" value="<?php echo htmlspecialchars($filter); ?>">
         <input type="search" name="q" value="<?php echo htmlspecialchars($search); ?>" placeholder="Search by order ID, listing, buyer, or address…" style="flex:1;">
         <button type="submit" class="btn btn-primary">Search</button>
         <?php if ($search !== ''): ?>
-            <a href="orders.php" class="btn btn-secondary">Clear</a>
+            <a href="orders.php?filter=<?php echo urlencode($filter); ?>" class="btn btn-secondary">Clear</a>
         <?php endif; ?>
     </form>
 
